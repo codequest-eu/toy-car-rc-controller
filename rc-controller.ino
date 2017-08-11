@@ -14,6 +14,7 @@ const int alpha_ch1 = 25;
 Servo ch1_out;
 
 int ch2;
+int p_ch2 = 0;
 const int alpha_ch2 = 40;
 Servo ch2_out;
 
@@ -37,10 +38,11 @@ void loop() {
   
   ch2 = pulseIn(ESC_PIN_IN, HIGH); // Read the pulse width of 973 - 1954 for thr
   if (ch2 > THROTTLE_ZERO + alpha_ch2 || ch2 < THROTTLE_ZERO - alpha_ch2) {
-    ch2_out.writeMicroseconds(ch2);
+    p_ch2 = ch2;
   } else {
-    ch2_out.writeMicroseconds(THROTTLE_ZERO);
+    p_ch2 = THROTTLE_ZERO;
   }
+  ch2_out.writeMicroseconds(p_ch2);
   
   int t = millis();
   if (t - t_last_log > t_log_freq) {
@@ -48,7 +50,7 @@ void loop() {
     String log_out = "{\"steering\": ";
     log_out += p_ch1;
     log_out += ", \"acceleration\": ";
-    log_out += ch2;
+    log_out += p_ch2;
     log_out += "}";
     Serial.println(log_out);
   }
