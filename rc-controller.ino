@@ -1,38 +1,56 @@
 #include <Servo.h>
 
+#define SERVO_PIN_OUT 11 // steering servo
+#define SERVO_PIN_IN 13
+
+#define ESC_PIN_OUT 9 // electronic speed controller
+#define ESC_PIN_IN 10
+
+#define THROTTLE_ZERO 1470
+
 int ch1;
 int p_ch1 = 200;
-const int alpha_ch1 = 15;
+const int alpha_ch1 = 25;
 Servo ch1_out;
+
+int ch2;
+const int alpha_ch2 = 40;
+Servo ch2_out;
 
 int t_last_log = 0;
 int t_log_freq = 250;
 
-// CH1 - steering angle
-// PIN 9 (pwm) - OUTPUT CH1. Connect it to pwm wire of the steeering servo in the model.
-// PIN 10 (pwm) - INPUT CH1. Connect it to steering pwm output in model Rx (channel 1)
-
-// TODO: CH2 - throttle
-// PIN 11 (pwm) - OUTPUT CH2. Connect it to pwm wire of the steeering servo in the model.
-// PIN 12 (pwm) - INPUT CH2. Connect it to steering pwm output in model Rx (channel 2)
-
 void setup() {
-  ch1_out.attach(9);
-  pinMode(10, INPUT);
+  ch1_out.attach(SERVO_PIN_OUT);
+  ch2_out.attach(ESC_PIN_OUT);
+  pinMode(SERVO_PIN_IN, INPUT);
+  pinMode(ESC_PIN_IN, INPUT);
   Serial.begin(9600);
 }
 
 void loop() { 
-  ch1 = pulseIn(10, HIGH); // Read the pulse width of 973 - 1954
+  ch1 = pulseIn(SERVO_PIN_IN, HIGH); // Read the pulse width of 973 - 1954 for steering
   if (abs(ch1 - p_ch1) > alpha_ch1) {
     p_ch1 = ch1;  
     ch1_out.writeMicroseconds(p_ch1);
   }
   
+  ch2 = pulseIn(ESC_PIN_IN, HIGH); // Read the pulse width of 973 - 1954 for thr
+  if (ch2 > THROTTLE_ZERO + alpha_ch2 || ch2 < THROTTLE_ZERO - alpha_ch2) {
+    ch2_out.writeMicroseconds(ch2);
+  } else {
+    ch2_out.writeMicroseconds(THROTTLE_ZERO);
+  }
+  
   int t = millis();
   if (t - t_last_log > t_log_freq) {
     t_last_log = t;
-    Serial.println(p_ch1);          
+    String log_out = "{\"steering\": ";
+    log_out += p_ch1;
+    log_out += ", \"acceleration\": ";
+    log_out += ch2;
+    log_out += "}";
+    Serial.println(log_out);
   }
   
   delay(10);
