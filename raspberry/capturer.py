@@ -20,7 +20,6 @@ class Capturer(Process):
             yield 'images/%d.jpg' % self.timestamp()
 
     def run(self):
-        print("Capturing started in process %d" % os.getpid())
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         os.chdir(self.directory)
         with PiCamera(resolution=(640, 480), framerate=15) as camera:

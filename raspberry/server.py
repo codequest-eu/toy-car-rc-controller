@@ -1,7 +1,9 @@
 import os
 from multiprocessing import Value
 import signal
+import datetime
 import time
+import pytz
 import cherrypy
 from cherrypy.process.plugins import SimplePlugin
 from capturer import Capturer
@@ -21,6 +23,7 @@ class ExitPlugin(SimplePlugin):
 class CarServer(object):
 
     def __init__(self):
+        self.timezone = pytz.timezone('Europe/Warsaw')
         self.terminator = Value('i', 1)
         self.capturer = None
         self.serial_reader = None
@@ -30,7 +33,7 @@ class CarServer(object):
         if self.terminator.value == 0:
             cherrypy.response.status = 400
             return "WARNING: Session already started"
-        directory = "session-%d" % self.timestamp()
+        directory = "session-%s" % self.timestamp()
         images = "%s/images" % directory
         os.makedirs(images)
         self.terminator.value = 0
@@ -61,7 +64,9 @@ class CarServer(object):
         self.serial_reader = None 
 
     def timestamp(self):
-        return int(round(time.time() * 1000))
+        utc_dt = datetime.datetime.now(pytz.utc)
+        loc_dt = utc_dt.astimezone(self.timezone)
+        return loc_dt.strftime("%Y%m%d%H%M%S")
 
 if __name__ == "__main__":
     car_server = CarServer()
