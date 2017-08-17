@@ -1,66 +1,31 @@
 import os
-from glob import glob
-from picamera import PiCamera
-from time import sleep
-import serial
-import time
-from multiprocessing import Process, Value
+from multiprocessing import Value
 import signal
-import sys
+import time
+from capturer import Capturer
+from serial_reader import SerialReader
+from interrupt_handler import InterruptHandler
 
-global camera_process
-global serial_process
-global terminated 
 
 def timestamp():
     return int(round(time.time() * 1000))
 
-def filenames():
-    frame = 0
-    while terminated.value == 0:
-        yield 'images/%d.jpg' % timestamp()
+def start_capturing():
+    directory = "session-%d" % timestamp()
+    images = "%s/images" % directory
+    os.makedirs(images)
+    terminator = Value('i', 0)
+   
+    capturer = Capturer(directory, terminator)
+    serial_reader = SerialReader(directory, terminator)
+    
+    capturer.start()
+    serial_reader.start()
 
-def capture():
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
-    with PiCamera(resolution=(640, 480), framerate=15) as camera:
-        camera.start_preview()
-        sleep(2)
-        camera.capture_sequence(filenames(), use_video_port=True)
+    return ([capturer, serial_reader], terminator)
 
-def read_serial():
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
-    ser = serial.Serial('/dev/ttyACM0', 9600)
-    with open("log", "w") as f:
-        while terminated.value == 0:
-            read_serial = ser.readline()
-            f.write(str(timestamp()) + "/" +  read_serial)
-
-def interrupt_handler(signal, frame):
-    terminated.value = 1
-
-def cleanup():
-    try:
-        os.remove("log")
-        for file in glob("images/*.jpg"):
-            os.remove(file)
-    except OSError:
-        pass
-
-# main
-
-terminated = Value('i', 0)
-
-camera_process = Process(target=capture)
-camera_process.daemon = True
-
-serial_process = Process(target=read_serial)
-serial_process.daemon = True
-
-cleanup()
-camera_process.start()
-serial_process.start()
-
-signal.signal(signal.SIGINT, interrupt_handler)
-
-camera_process.join()
-serial_process.join()
+if __name__ == "__main__":
+    (processes, terminator) = start_capturing()
+    signal.signal(signal.SIGINT, InterruptHandler(terminator))
+    for process in processes:
+        process.join()
