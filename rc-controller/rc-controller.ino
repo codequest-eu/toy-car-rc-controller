@@ -18,14 +18,14 @@
 int t_last_log = 0;
 int t_log_freq = 50;
 
-enum InputModes {
+enum InputMode {
   inputModeNone,
   inputModePilot,
   inputModeSerial
 };
 
 String serialInput = "";
-enum InputModes inputMode = inputModePilot;
+enum InputMode inputMode = inputModePilot;
 
 int lastAppliedSteer = 0;
 int currentSteer = 0;
@@ -77,12 +77,10 @@ void steeringFall() {
 
 void loop() { 
   handleCommands();
-  
-// Read the pulse width of 973 - 1954 for steering
-  steeringOut.writeMicroseconds(currentSteering);
-  
-// Read the pulse width of 973 - 1954 for thr
-  throttleOut.writeMicroseconds(currentThrottle);
+
+  if (inputMode != inputModeNone) {
+    applyCurrentValues();
+  }
   
   int t = millis();
   if (t - t_last_log > t_log_freq) {
@@ -102,19 +100,17 @@ void handleCommands() {
 
 void executeCommand(String command) {
   if (command == COMMAND_NO_INPUT) {
-      inputMode = inputModeNone;
+      setInputMode(inputModeNone);
     } else if (command == COMMAND_PILOT_INPUT) {
-      inputMode = inputModePilot;
-      enablePwmInterrupts();
+      setInputMode(inputModePilot);
     } else if (command == COMMAND_SERIAL_INPUT) {
-      inputMode = inputModeSerial;
-      currentThrottle = DEFAULT_THROTTLE; // Const throttle so far, to discuss.      
+      setInputMode(inputModeSerial);
     } else if (int steer = command.toInt() != 0) { // Only numeric value in command is new steering. Probably will need to extend later.
       steerCommand(steer);
     }
 }
 
-void enablePwmInterrupts() {
+void enablePwmInterrupts() { // TODO: is it safe to call it twice? same for disable
   attachInterrupt(digitalPinToInterrupt(ESC_PIN_IN), throttleRise, RISING);
   attachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN), steeringRise, RISING);
 }
@@ -128,6 +124,26 @@ void steerCommand(int value) {
   if (inputMode != inputModeSerial) return;
 
   currentSteer = value;
+}
+
+void applyCurrentValues() {
+  // Read the pulse width of 973 - 1954 for steering
+  steeringOut.writeMicroseconds(currentSteering);
+  
+// Read the pulse width of 973 - 1954 for thr
+  throttleOut.writeMicroseconds(currentThrottle);
+}
+
+void setInputMode(InputMode mode) {
+  inputMode = mode;
+  if (mode == inputModeNone) {
+    disablePwmInterrupts();
+  } else if (mode == inputModePilot) {
+    enablePwmInterrupts();
+  } else if (mode == inputModeSerial) {
+    disablePwmInterrupts();
+    currentThrottle = DEFAULT_THROTTLE; // Const throttle so far, to discuss.
+  }
 }
 
 //void serialEvent() {
