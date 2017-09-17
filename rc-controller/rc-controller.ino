@@ -11,12 +11,23 @@
 #define MAX_STEERING 2500
 #define DEFAULT_THROTTLE 1520
 
-#define COMMAND_NO_INPUT "stop"
-#define COMMAND_PILOT_INPUT "pilot"
-#define COMMAND_SERIAL_INPUT "serial"
+#define COMMAND_NO_INPUT 'a'
+#define COMMAND_PILOT_INPUT 'b'
+#define COMMAND_SERIAL_INPUT 'c'
+#define COMMAND_SERIAL_STEER 'd'
 
 int t_last_log = 0;
 int t_log_freq = 50;
+
+enum Command {
+  commandEmpty,
+  commandNoInput,
+  commandPilotInput,
+  commandSerialInput,
+  commandSerialSteerValue
+};
+
+int steerCommandValue = 0;
 
 enum InputMode {
   inputModeNone,
@@ -24,7 +35,9 @@ enum InputMode {
   inputModeSerial
 };
 
-String serialInput = "";
+char serialInput[128];
+int inputSize = 0;
+int inputStart = 0;
 enum InputMode inputMode = inputModePilot;
 
 int lastAppliedSteer = 0;
@@ -90,24 +103,62 @@ void loop() {
 }
 
 void handleCommands() {
-  while (int separatorLocation = serialInput.indexOf('\n') >= 0) {
-    String command = serialInput.substring(0, separatorLocation);
-    serialInput = serialInput.substring(separatorLocation + 1);
-
-    executeCommand(command);
+  Command command;
+  while (command = readSerialCommand(), command != commandEmpty) {
+    if (command == commandNoInput || command == commandPilotInput || command == commandSerialInput) {
+      setInputMode(command);
+    } else if (command == commandSerialSteerValue) {
+      steerCommand(steerCommandValue);
+    }
   }
+
+  int remainingBytes = inputSize - inputStart;
+  for (int i = 0; i < remainingBytes; i++) {
+    serialInput[i] = serialInput[inputStart + i];
+  }
+
+  inputStart = 0;
+  inputSize = remainingBytes;
 }
 
-void executeCommand(String command) {
-  if (command == COMMAND_NO_INPUT) {
-      setInputMode(inputModeNone);
-    } else if (command == COMMAND_PILOT_INPUT) {
-      setInputMode(inputModePilot);
-    } else if (command == COMMAND_SERIAL_INPUT) {
-      setInputMode(inputModeSerial);
-    } else if (int steer = command.toInt() != 0) { // Only numeric value in command is new steering. Probably will need to extend later.
-      steerCommand(steer);
-    }
+Command readSerialCommand() {
+  int bytesInBuffer = inputSize - inputStart;
+  
+  if (bytesInBuffer < 1) {
+    return commandEmpty;
+  }
+
+  char c = serialInput[inputStart];
+  if (c == COMMAND_NO_INPUT) {
+    inputStart += 1;
+    return commandNoInput;
+  }
+  
+  if (c == COMMAND_PILOT_INPUT) {
+    inputStart += 1;
+    return commandPilotInput;
+  }
+  
+  if (c == COMMAND_SERIAL_INPUT) {
+    inputStart += 1;
+    return commandSerialInput;
+  }
+
+  if (c == COMMAND_SERIAL_STEER) {
+    if (bytesInBuffer < 5) {
+      return commandEmpty;
+    } else {
+      uint32_t value = (uint32_t(serialInput[inputStart]) << 24) | 
+        (uint32_t(serialInput[inputStart + 1]) << 16) | 
+        (uint32_t(serialInput[inputStart + 2]) << 8) | 
+        serialInput[inputStart + 3];
+      steerCommandValue = value;
+      inputStart += 5;
+      return commandSerialSteerValue;
+    }  
+  }
+  
+  return commandEmpty;
 }
 
 void enablePwmInterrupts() { // TODO: is it safe to call it twice? same for disable
@@ -134,23 +185,30 @@ void applyCurrentValues() {
   throttleOut.writeMicroseconds(currentThrottle);
 }
 
-void setInputMode(InputMode mode) {
-  inputMode = mode;
-  if (mode == inputModeNone) {
+void setInputMode(Command modeCommand) {
+  if (modeCommand == commandNoInput) {
     disablePwmInterrupts();
-  } else if (mode == inputModePilot) {
+    inputMode = inputModeNone;
+  } else if (modeCommand == commandPilotInput) {
     enablePwmInterrupts();
-  } else if (mode == inputModeSerial) {
+    inputMode = inputModePilot;
+  } else if (modeCommand == commandSerialInput) {
     disablePwmInterrupts();
     currentThrottle = DEFAULT_THROTTLE; // Const throttle so far, to discuss.
+    inputMode = inputModeSerial;
   }
 }
 
-//void serialEvent() {
-//  int inputLen = Serial.available();
-//  if (inputLen > 0) {
-//    char input[inputLen];
-//    Serial.readBytes(input, inputLen);
-//    serialInput += String(input);
-//  }
-//}
+void serialEvent() {
+  int inputLen = Serial.available();
+  if (inputLen > 0) {
+    char input[inputLen];
+    Serial.readBytes(input, inputLen);
+    
+    for (int i = 0; i < inputLen; i++) {
+      serialInput[inputStart + i] = input[i];
+    }
+
+    inputSize += inputLen;
+  }
+}
