@@ -21,6 +21,7 @@ int t_log_freq = 50;
 
 enum Command {
   commandEmpty,
+  commandIncorrect,
   commandNoInput,
   commandPilotInput,
   commandSerialInput,
@@ -132,19 +133,13 @@ Command readSerialCommand() {
   if (c == COMMAND_NO_INPUT) {
     inputStart += 1;
     return commandNoInput;
-  }
-  
-  if (c == COMMAND_PILOT_INPUT) {
+  } else if (c == COMMAND_PILOT_INPUT) {
     inputStart += 1;
     return commandPilotInput;
-  }
-  
-  if (c == COMMAND_SERIAL_INPUT) {
+  } else if (c == COMMAND_SERIAL_INPUT) {
     inputStart += 1;
     return commandSerialInput;
-  }
-
-  if (c == COMMAND_SERIAL_STEER) {
+  } else if (c == COMMAND_SERIAL_STEER) {
     if (bytesInBuffer < 5) {
       return commandEmpty;
     } else {
@@ -152,10 +147,13 @@ Command readSerialCommand() {
         (uint32_t(serialInput[inputStart + 1]) << 16) | 
         (uint32_t(serialInput[inputStart + 2]) << 8) | 
         serialInput[inputStart + 3];
-      steerCommandValue = value;
+      steerCommandValue = value; // TODO: incorrect value flow
       inputStart += 5;
       return commandSerialSteerValue;
     }  
+  } else {
+    inputStart += 1; // TODO: log incorrect case?
+    return commandIncorrect;
   }
   
   return commandEmpty;
