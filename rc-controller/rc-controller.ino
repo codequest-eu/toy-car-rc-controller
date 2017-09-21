@@ -9,23 +9,41 @@
 #define THROTTLE_ZERO 1470
 #define MAX_THROTTLE 2500
 #define MAX_STEERING 2500
-#define DEFAULT_THROTTLE 1520
+#define DEFAULT_THROTTLE 1550
 
-#define COMMAND_NO_INPUT "stop"
-#define COMMAND_PILOT_INPUT "pilot"
-#define COMMAND_SERIAL_INPUT "serial"
+// learning
+#define COMMAND_NO_INPUT 'i' // idle
+#define COMMAND_PILOT_INPUT 'r' // remote
+#define COMMAND_SERIAL_INPUT 'a' // autonomus
+#define COMMAND_SERIAL_STEER 'd' // turn
 
 int t_last_log = 0;
 int t_log_freq = 50;
 
-enum InputModes {
+int t_last_apply = 0;
+int t_min_apply_delay = 50;
+
+enum Command {
+  commandEmpty,
+  commandIncorrect,
+  commandNoInput,
+  commandPilotInput,
+  commandSerialInput,
+  commandSerialSteerValue
+};
+
+int steerCommandValue = 0;
+
+enum InputMode {
   inputModeNone,
   inputModePilot,
   inputModeSerial
 };
 
-String serialInput = "";
-enum InputModes inputMode = inputModePilot;
+char serialInput[128];
+int inputSize = 0;
+int inputStart = 0;
+enum InputMode inputMode = inputModePilot;
 
 int lastAppliedSteer = 0;
 int currentSteer = 0;
@@ -46,11 +64,27 @@ void setup() {
   pinMode(ESC_PIN_IN, INPUT);
   Serial.begin(9600);
 
-  enablePwmInterrupts();
+  setInputMode(commandPilotInput);
+}
+
+void loop() {
+  handleCommands();
+  
+  int t = millis();
+  if (inputMode != inputModeNone && t - t_last_apply > t_min_apply_delay) {
+    applyCurrentValues();
+    t_last_apply = t;
+  }
+
+  t = millis();
+  if (t - t_last_log > t_log_freq) {
+    t_last_log = t;
+    Serial.println(currentSteering);
+  }
 }
 
 void throttleRise() {
-  throttleInputStartTime = micros();  
+  throttleInputStartTime = micros();
   attachInterrupt(digitalPinToInterrupt(ESC_PIN_IN), throttleFall, FALLING);
 }
 
@@ -63,7 +97,7 @@ void throttleFall() {
 }
 
 void steeringRise() {
-  steeringInputStartTime = micros();  
+  steeringInputStartTime = micros();
   attachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN), steeringFall, FALLING);
 }
 
@@ -75,46 +109,61 @@ void steeringFall() {
   attachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN), steeringRise, RISING);
 }
 
-void loop() { 
-  handleCommands();
-  
-// Read the pulse width of 973 - 1954 for steering
-  steeringOut.writeMicroseconds(currentSteering);
-  
-// Read the pulse width of 973 - 1954 for thr
-  throttleOut.writeMicroseconds(currentThrottle);
-  
-  int t = millis();
-  if (t - t_last_log > t_log_freq) {
-    t_last_log = t;
-    Serial.println(currentSteering);
-  }
-}
-
 void handleCommands() {
-  while (int separatorLocation = serialInput.indexOf('\n') >= 0) {
-    String command = serialInput.substring(0, separatorLocation);
-    serialInput = serialInput.substring(separatorLocation + 1);
-
-    executeCommand(command);
-  }
-}
-
-void executeCommand(String command) {
-  if (command == COMMAND_NO_INPUT) {
-      inputMode = inputModeNone;
-    } else if (command == COMMAND_PILOT_INPUT) {
-      inputMode = inputModePilot;
-      enablePwmInterrupts();
-    } else if (command == COMMAND_SERIAL_INPUT) {
-      inputMode = inputModeSerial;
-      currentThrottle = DEFAULT_THROTTLE; // Const throttle so far, to discuss.      
-    } else if (int steer = command.toInt() != 0) { // Only numeric value in command is new steering. Probably will need to extend later.
-      steerCommand(steer);
+  Command command;
+  while (command = readSerialCommand(), command != commandEmpty) {
+    if (command == commandNoInput || command == commandPilotInput || command == commandSerialInput) {
+      setInputMode(command);
+    } else if (command == commandSerialSteerValue) {
+      steerCommand(steerCommandValue);
     }
+  }
+
+  int remainingBytes = inputSize - inputStart;
+  for (int i = 0; i < remainingBytes; i++) {
+    serialInput[i] = serialInput[inputStart + i];
+  }
+
+  inputStart = 0;
+  inputSize = remainingBytes;
 }
 
-void enablePwmInterrupts() {
+Command readSerialCommand() {
+  int bytesInBuffer = inputSize - inputStart;
+
+  if (bytesInBuffer < 1) {
+    return commandEmpty;
+  }
+
+  char c = serialInput[inputStart];
+  if (c == COMMAND_NO_INPUT) {
+    inputStart += 1;
+    return commandNoInput;
+  } else if (c == COMMAND_PILOT_INPUT) {
+    inputStart += 1;
+    return commandPilotInput;
+  } else if (c == COMMAND_SERIAL_INPUT) {
+    inputStart += 1;
+    return commandSerialInput;
+  } else if (c == COMMAND_SERIAL_STEER) {
+    if (bytesInBuffer < 3) {
+      return commandEmpty;
+    } else {
+      uint16_t value = (uint16_t(serialInput[inputStart + 1]) << 8) |
+                       serialInput[inputStart + 2];
+      steerCommandValue = value; // TODO: incorrect value flow
+      inputStart += 3;
+      return commandSerialSteerValue;
+    }
+  } else {
+    inputStart += 1; // TODO: log incorrect case?
+    return commandIncorrect;
+  }
+
+  return commandEmpty;
+}
+
+void enablePwmInterrupts() { // TODO: is it safe to call it twice? same for disable
   attachInterrupt(digitalPinToInterrupt(ESC_PIN_IN), throttleRise, RISING);
   attachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN), steeringRise, RISING);
 }
@@ -130,11 +179,38 @@ void steerCommand(int value) {
   currentSteer = value;
 }
 
-//void serialEvent() {
-//  int inputLen = Serial.available();
-//  if (inputLen > 0) {
-//    char input[inputLen];
-//    Serial.readBytes(input, inputLen);
-//    serialInput += String(input);
-//  }
-//}
+void applyCurrentValues() {
+  // Read the pulse width of 973 - 1954 for steering
+  steeringOut.writeMicroseconds(currentSteering);
+
+  // Read the pulse width of 973 - 1954 for thr
+  throttleOut.writeMicroseconds(currentThrottle);
+}
+
+void setInputMode(Command modeCommand) {
+  if (modeCommand == commandNoInput) {
+    disablePwmInterrupts();
+    inputMode = inputModeNone;
+  } else if (modeCommand == commandPilotInput) {
+    enablePwmInterrupts();
+    inputMode = inputModePilot;
+  } else if (modeCommand == commandSerialInput) {
+    disablePwmInterrupts();
+    currentThrottle = DEFAULT_THROTTLE; // Const throttle so far, to discuss.
+    inputMode = inputModeSerial;
+  }
+}
+
+void serialEvent() {
+  int inputLen = Serial.available();
+  if (inputLen > 0) {
+    char input[inputLen];
+    Serial.readBytes(input, inputLen);
+
+    for (int i = 0; i < inputLen; i++) {
+      serialInput[inputSize + i] = input[i]; // we assume here that inputStart == 0
+    }
+
+    inputSize += inputLen;
+  }
+}
