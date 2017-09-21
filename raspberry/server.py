@@ -33,9 +33,8 @@ class CarServer(object):
         if self.terminator.value == 0:
             cherrypy.response.status = 400
             return "WARNING: Session already started"
-        directory = "session-%s" % self.timestamp()
-        images = "%s/images" % directory
-        os.makedirs(images)
+            
+        directory = directory_for_session()
         self.terminator.value = 0
 
         self.capturer = Capturer(directory, self.terminator)
@@ -62,6 +61,12 @@ class CarServer(object):
 
         self.capturer = None
         self.serial_reader = None 
+
+    def directory_for_session(self):
+        directory = "session-%s" % self.timestamp()
+        images = "%s/images" % directory
+        os.makedirs(images)
+        return directory
 
     def timestamp(self):
         utc_dt = datetime.datetime.now(pytz.utc)
