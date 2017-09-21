@@ -11,10 +11,11 @@
 #define MAX_STEERING 2500
 #define DEFAULT_THROTTLE 1520
 
-#define COMMAND_NO_INPUT 'a'
-#define COMMAND_PILOT_INPUT 'b'
-#define COMMAND_SERIAL_INPUT 'c'
-#define COMMAND_SERIAL_STEER 'd'
+// learning
+#define COMMAND_NO_INPUT 'i' // idle
+#define COMMAND_PILOT_INPUT 'r' // remote
+#define COMMAND_SERIAL_INPUT 'a' // autonomus
+#define COMMAND_SERIAL_STEER 'd' // turn
 
 int t_last_log = 0;
 int t_log_freq = 50;
@@ -60,11 +61,25 @@ void setup() {
   pinMode(ESC_PIN_IN, INPUT);
   Serial.begin(9600);
 
-  enablePwmInterrupts();
+  setInputMode(commandPilotInput);
+}
+
+void loop() {
+  handleCommands();
+
+  if (inputMode != inputModeNone) {
+    applyCurrentValues();
+  }
+
+  int t = millis();
+  if (t - t_last_log > t_log_freq) {
+    t_last_log = t;
+    Serial.println(currentSteering);
+  }
 }
 
 void throttleRise() {
-  throttleInputStartTime = micros();  
+  throttleInputStartTime = micros();
   attachInterrupt(digitalPinToInterrupt(ESC_PIN_IN), throttleFall, FALLING);
 }
 
@@ -77,7 +92,7 @@ void throttleFall() {
 }
 
 void steeringRise() {
-  steeringInputStartTime = micros();  
+  steeringInputStartTime = micros();
   attachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN), steeringFall, FALLING);
 }
 
@@ -87,20 +102,6 @@ void steeringFall() {
     currentSteering = steering;
   }
   attachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN), steeringRise, RISING);
-}
-
-void loop() { 
-  handleCommands();
-
-  if (inputMode != inputModeNone) {
-    applyCurrentValues();
-  }
-  
-  int t = millis();
-  if (t - t_last_log > t_log_freq) {
-    t_last_log = t;
-    Serial.println(currentSteering);
-  }
 }
 
 void handleCommands() {
@@ -124,7 +125,7 @@ void handleCommands() {
 
 Command readSerialCommand() {
   int bytesInBuffer = inputSize - inputStart;
-  
+
   if (bytesInBuffer < 1) {
     return commandEmpty;
   }
@@ -140,22 +141,20 @@ Command readSerialCommand() {
     inputStart += 1;
     return commandSerialInput;
   } else if (c == COMMAND_SERIAL_STEER) {
-    if (bytesInBuffer < 5) {
+    if (bytesInBuffer < 3) {
       return commandEmpty;
     } else {
-      uint32_t value = (uint32_t(serialInput[inputStart]) << 24) | 
-        (uint32_t(serialInput[inputStart + 1]) << 16) | 
-        (uint32_t(serialInput[inputStart + 2]) << 8) | 
-        serialInput[inputStart + 3];
+      uint16_t value = (uint16_t(serialInput[inputStart + 1]) << 8) |
+                       serialInput[inputStart + 2];
       steerCommandValue = value; // TODO: incorrect value flow
-      inputStart += 5;
+      inputStart += 3;
       return commandSerialSteerValue;
-    }  
+    }
   } else {
     inputStart += 1; // TODO: log incorrect case?
     return commandIncorrect;
   }
-  
+
   return commandEmpty;
 }
 
@@ -178,8 +177,8 @@ void steerCommand(int value) {
 void applyCurrentValues() {
   // Read the pulse width of 973 - 1954 for steering
   steeringOut.writeMicroseconds(currentSteering);
-  
-// Read the pulse width of 973 - 1954 for thr
+
+  // Read the pulse width of 973 - 1954 for thr
   throttleOut.writeMicroseconds(currentThrottle);
 }
 
@@ -202,9 +201,9 @@ void serialEvent() {
   if (inputLen > 0) {
     char input[inputLen];
     Serial.readBytes(input, inputLen);
-    
+
     for (int i = 0; i < inputLen; i++) {
-      serialInput[inputStart + i] = input[i];
+      serialInput[inputSize + i] = input[i]; // we assume here that inputStart == 0
     }
 
     inputSize += inputLen;
