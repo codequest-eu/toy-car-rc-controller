@@ -9,7 +9,7 @@
 #define THROTTLE_ZERO 1470
 #define MAX_THROTTLE 2500
 #define MAX_STEERING 2500
-#define DEFAULT_THROTTLE 1520
+#define DEFAULT_THROTTLE 1550
 
 // learning
 #define COMMAND_NO_INPUT 'i' // idle
@@ -19,6 +19,9 @@
 
 int t_last_log = 0;
 int t_log_freq = 50;
+
+int t_last_apply = 0;
+int t_min_apply_delay = 50;
 
 enum Command {
   commandEmpty,
@@ -66,12 +69,14 @@ void setup() {
 
 void loop() {
   handleCommands();
-
-  if (inputMode != inputModeNone) {
+  
+  int t = millis();
+  if (inputMode != inputModeNone && t - t_last_apply > t_min_apply_delay) {
     applyCurrentValues();
+    t_last_apply = t;
   }
 
-  int t = millis();
+  t = millis();
   if (t - t_last_log > t_log_freq) {
     t_last_log = t;
     Serial.println(currentSteering);
