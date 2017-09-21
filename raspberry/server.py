@@ -9,6 +9,7 @@ from cherrypy.process.plugins import SimplePlugin
 from capturer import Capturer
 from serial_reader import SerialReader
 from interrupt_handler import InterruptHandler
+from command_executor import CommandExecutor, Status
 
 class ExitPlugin(SimplePlugin):
 
@@ -27,6 +28,27 @@ class CarServer(object):
         self.terminator = Value('i', 1)
         self.capturer = None
         self.serial_reader = None
+        self.command_executor = CommandExecutor()
+
+    @cherrypy.expose
+    def idle(self):
+        self.command_executor.change_status(Status.IDLE)
+
+    @cherrypy.expose
+    def remote(self):
+        self.command_executor.change_status(Status.REMOTE)
+
+    @cherrypy.expose
+    def learning(self):
+        self.command_executor.change_status(Status.LEARNING)
+
+    @cherrypy.expose
+    def autonomous(self):
+        self.command_executor.change_status(Status.AUTONOMOUS)
+
+    @cherrypy.expose
+    def turn(self, angle):
+        self.command_executor.make_turn(angle)
 
     @cherrypy.expose
     def start(self):
