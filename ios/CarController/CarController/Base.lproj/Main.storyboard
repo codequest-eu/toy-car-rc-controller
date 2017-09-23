@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="t0U-iL-loL">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="t0U-iL-loL">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="HelveticaNeue.ttc">
+            <string>HelveticaNeue</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Recording List-->
         <scene sceneID="49i-Es-fiw">
@@ -100,10 +105,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GCP-wn-OAc">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="207.5"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="191.5"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LAZ-XF-Fsw">
-                                        <rect key="frame" x="124.5" y="109" width="126.5" height="29.5"/>
+                                        <rect key="frame" x="124.5" y="101" width="126.5" height="29.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sBv-Xv-Vac">
                                                 <rect key="frame" x="0.0" y="0.0" width="86" height="29.5"/>
@@ -137,10 +142,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kj2-DD-fXm">
-                                <rect key="frame" x="0.0" y="207.5" width="375" height="208"/>
+                                <rect key="frame" x="0.0" y="191.5" width="375" height="191"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QzL-UA-6yf">
-                                        <rect key="frame" x="147.5" y="63.5" width="80" height="80"/>
+                                        <rect key="frame" x="147.5" y="55" width="80" height="80"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="QzL-UA-6yf" secondAttribute="height" multiplier="1:1" id="0ox-ad-8o0"/>
                                             <constraint firstAttribute="width" constant="80" id="sWn-UI-ZYp"/>
@@ -155,10 +160,10 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Eft-Lf-0Yg">
-                                <rect key="frame" x="0.0" y="415.5" width="375" height="207.5"/>
+                                <rect key="frame" x="0.0" y="382.5" width="375" height="191.5"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vnn-ZS-exj">
-                                        <rect key="frame" x="147.5" y="64" width="80" height="80"/>
+                                        <rect key="frame" x="147.5" y="56" width="80" height="80"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Vnn-ZS-exj" secondAttribute="height" multiplier="1:1" id="JN8-zJ-P8o"/>
                                             <constraint firstAttribute="width" constant="80" id="gNo-KA-cub"/>
@@ -205,7 +210,7 @@
         <scene sceneID="i7c-it-2CF">
             <objects>
                 <tabBarController id="t0U-iL-loL" customClass="RootTabBarController" customModule="CarController" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBar key="tabBar" contentMode="scaleToFill" id="eRi-mD-JEw">
+                    <tabBar key="tabBar" contentMode="scaleAspectFit" id="eRi-mD-JEw">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

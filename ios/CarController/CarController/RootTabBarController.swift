@@ -16,11 +16,6 @@ class RootTabBarController: UITabBarController {
         setupTabBarControllers()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     private func setupTabBarAppearance() {
         tabBar.backgroundColor = UIColor.black
         tabBar.barTintColor = UIColor.black
@@ -38,5 +33,31 @@ class RootTabBarController: UITabBarController {
         recordingListViewController.tabBarItem = listTabBar
         
         viewControllers = [actionsViewController, recordingListViewController]
+        
+        fixFrameOfTabBarItemsImageViews()
+    }
+    
+    fileprivate func fixFrameOfTabBarItemsImageViews() {
+        tabBar.subviews.forEach {
+            let tabBarItemImageView = $0.subviews.flatMap { $0 as? UIImageView }.first
+            setupTabBarImage(tabBarItemImageView)
+        }
+    }
+    
+    fileprivate func setupTabBarImage(_ imageView: UIImageView?) {
+        guard let imageView = imageView else { return }
+        
+        let frame = imageView.frame
+        imageView.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: 25, height: 25)
+        imageView.contentMode = .scaleToFill
+    }
+}
+
+//MARK: UITabBarDelegate
+
+extension RootTabBarController {
+    
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem)  {
+        fixFrameOfTabBarItemsImageViews()
     }
 }
