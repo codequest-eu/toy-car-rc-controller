@@ -201,8 +201,27 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Te5-5V-pzJ">
                                         <rect key="frame" x="0.0" y="0.0" width="125" height="214.5"/>
                                         <subviews>
+                                            <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PHs-Cd-XT7">
+                                                <rect key="frame" x="22.5" y="67.5" width="80" height="80"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gpD-lP-Sga">
+                                                        <rect key="frame" x="19.5" y="19.5" width="40" height="40"/>
+                                                        <color key="backgroundColor" red="0.84708658854166663" green="0.0" blue="0.17111545140000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="6hj-ed-9s5"/>
+                                                            <constraint firstAttribute="width" secondItem="gpD-lP-Sga" secondAttribute="height" id="mMX-aG-5pb"/>
+                                                        </constraints>
+                                                    </view>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <constraints>
+                                                    <constraint firstItem="gpD-lP-Sga" firstAttribute="centerX" secondItem="PHs-Cd-XT7" secondAttribute="centerX" id="1Qp-M5-68A"/>
+                                                    <constraint firstAttribute="width" secondItem="PHs-Cd-XT7" secondAttribute="height" id="6Uj-Ix-CEi"/>
+                                                    <constraint firstItem="gpD-lP-Sga" firstAttribute="centerY" secondItem="PHs-Cd-XT7" secondAttribute="centerY" id="Wiq-bK-b0j"/>
+                                                </constraints>
+                                            </view>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vnn-ZS-exj">
-                                                <rect key="frame" x="22" y="67.5" width="80" height="80"/>
+                                                <rect key="frame" x="22" y="67" width="80" height="80"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="Vnn-ZS-exj" secondAttribute="height" multiplier="1:1" id="JN8-zJ-P8o"/>
                                                     <constraint firstAttribute="width" constant="80" id="gNo-KA-cub"/>
@@ -217,6 +236,9 @@
                                         <constraints>
                                             <constraint firstItem="Vnn-ZS-exj" firstAttribute="centerY" secondItem="Te5-5V-pzJ" secondAttribute="centerY" id="6Ki-Ab-e6j"/>
                                             <constraint firstItem="Vnn-ZS-exj" firstAttribute="centerX" secondItem="Te5-5V-pzJ" secondAttribute="centerX" id="7OV-yS-cyW"/>
+                                            <constraint firstItem="PHs-Cd-XT7" firstAttribute="centerY" secondItem="Te5-5V-pzJ" secondAttribute="centerY" id="LS0-4I-Y1V"/>
+                                            <constraint firstItem="PHs-Cd-XT7" firstAttribute="centerX" secondItem="Te5-5V-pzJ" secondAttribute="centerX" id="jZp-eL-VzK"/>
+                                            <constraint firstItem="PHs-Cd-XT7" firstAttribute="width" secondItem="Vnn-ZS-exj" secondAttribute="width" id="jqm-Z3-hsR"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J1o-yG-TNg">
@@ -309,6 +331,8 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="actionContainerView" destination="kj2-DD-fXm" id="zKf-Gf-PJO"/>
+                        <outlet property="activeRecordActionView" destination="gpD-lP-Sga" id="ZCj-uu-mo8"/>
+                        <outlet property="activeRecordBorderView" destination="PHs-Cd-XT7" id="mio-ed-pHc"/>
                         <outlet property="recordButton" destination="Vnn-ZS-exj" id="5pm-m3-jYM"/>
                         <outlet property="recordPauseButton" destination="z91-Xc-aEC" id="UZT-Gi-ZSK"/>
                         <outlet property="recordStopButton" destination="8l0-7K-L7v" id="Kaz-p3-01h"/>

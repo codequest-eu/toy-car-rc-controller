@@ -19,6 +19,9 @@ class ActionViewController: UIViewController {
     @IBOutlet weak var recordStopButton: UIButton!
     @IBOutlet weak var recordingContainerView: UIView!
     
+    @IBOutlet weak var activeRecordBorderView: UIView!
+    @IBOutlet weak var activeRecordActionView: UIView!
+    
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var statusContainerView: UIView!
     
@@ -61,6 +64,12 @@ class ActionViewController: UIViewController {
         drawBorder(actionContainerView)
         drawBorder(recordingContainerView)
         drawBorder(statusContainerView)
+        
+        activeRecordBorderView.layer.cornerRadius = activeRecordBorderView.frame.height / 2
+        activeRecordActionView.layer.cornerRadius = activeRecordActionView.frame.height / 2
+        
+        activeRecordBorderView.layer.borderColor = UIColor.red.cgColor
+        activeRecordBorderView.layer.borderWidth = 3
         
         status = .idle
     }
@@ -124,26 +133,35 @@ class ActionViewController: UIViewController {
         case .pausedRunning:
             status = .pausedRunningWhileRecording
         }
+        
+        recordButton.alpha = 0
+        activeRecordBorderView.alpha = 1
+        animateRecording()
     }
     
     @IBAction func pauseRecording(_ sender: Any) {
         switch status {
         case .idle,
-             .running:
+             .running,
+             .pausedRunning:
             return
         case .idleWhileRecording:
             status = .idleWhilePausedRecording
+            removeRecordingAnimation()
         case .idleWhilePausedRecording:
+            animateRecording()
             status = .idleWhileRecording
         case .runningWhileRecording:
+            removeRecordingAnimation()
             status = .runningWhilePausedRecording
         case .runningWhilePausedRecording:
+            animateRecording()
             status = .runningWhileRecording
-        case .pausedRunning:
-            status = .running
         case .pausedRunningWhileRecording:
+            removeRecordingAnimation()
             status = .pausedRunningWhilePausedRecording
         case .pausedRunningWhilePausedRecording:
+            animateRecording()
             status = .pausedRunningWhileRecording
         }
     }
@@ -151,6 +169,10 @@ class ActionViewController: UIViewController {
     @IBAction func stopRecording(_ sender: Any) {
         //todo: Update
         status = .idle
+        
+        recordButton.alpha = 1
+        activeRecordBorderView.alpha = 0
+        removeRecordingAnimation()
     }
     
     @IBAction func saveRecording(_ sender: Any) {
@@ -239,5 +261,17 @@ class ActionViewController: UIViewController {
     private func setupRecordingButtons(withAlpha alpha: CGFloat) {
         recordPauseButton.alpha = alpha
         recordStopButton.alpha = alpha
+    }
+    
+    private func animateRecording() {
+        UIView.animate(withDuration: 0.7, delay: 0, options: [.autoreverse, .repeat], animations: {
+            self.activeRecordActionView.alpha = 0
+        }, completion: nil)
+    }
+    
+    func removeRecordingAnimation() {
+        activeRecordActionView.layer.removeAllAnimations()
+        activeRecordActionView.alpha = 1
+        view.layoutIfNeeded()
     }
 }
