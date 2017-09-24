@@ -16,18 +16,18 @@ class ExitPlugin(SimplePlugin):
   def __init__(self, bus, server):
     SimplePlugin.__init__(self, bus)
     self.server = server
+    self.started = False
 
   def exit(self):
     self.unsubscribe()
-    self.server.cleanup()
+    self.server.terminate()
 
 class CarServer(object):
 
     def __init__(self):
         self.timezone = pytz.timezone('Europe/Warsaw')
-        self.terminator = Value('i', 1)
-        self.capturer = None
-        self.serial_reader = None
+        self.capturer = Capturer()
+        self.serial_reader = SerialReader()
         self.command_executor = CommandExecutor()
 
     @cherrypy.expose
@@ -52,37 +52,37 @@ class CarServer(object):
 
     @cherrypy.expose
     def start(self):
-        if self.terminator.value == 0:
+        if self.started:
             cherrypy.response.status = 400
             return "WARNING: Session already started"
-            
+
         directory = directory_for_session()
-        self.terminator.value = 0
+        self.started = True
 
-        self.capturer = Capturer(directory, self.terminator)
-        self.serial_reader = SerialReader(directory, self.terminator)
+        self.capturer.start(directory)
+        self.serial_reader.start_saving(directory)
 
-        self.capturer.start()
-        self.serial_reader.start()
         return "INFO: Session %s has been started" % directory
 
     @cherrypy.expose
     def stop(self):
-       if self.terminator.value == 1:
+       if not self.started:
            cherrypy.response.status = 400
            return "WARNING: Session not started"
        self.cleanup()
        return "INFO: Session ended successfully"
 
-    def cleanup(self):
-        if self.terminator.value == 1:
-            return
-        self.terminator.value = 1
-        self.capturer.join()
-        self.serial_reader.join()
+    def terminate(self):
+        self.cleanup()
+        self.capturer.terminate()
+        self.serial_reader.terminate()
 
-        self.capturer = None
-        self.serial_reader = None 
+    def cleanup(self):
+        if not self.started:
+            return
+
+        self.capturer.stop()
+        self.serial_reader.stop()
 
     def directory_for_session(self):
         directory = "session-%s" % self.timestamp()
