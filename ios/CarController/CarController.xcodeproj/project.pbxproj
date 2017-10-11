@@ -15,6 +15,8 @@
 		EE344F291F65CA1200E4598D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE344F281F65CA1200E4598D /* Images.xcassets */; };
 		EE344F2C1F65D00800E4598D /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE344F2B1F65D00800E4598D /* ActionViewController.swift */; };
 		EE344F2E1F65D01E00E4598D /* RecordingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE344F2D1F65D01E00E4598D /* RecordingListViewController.swift */; };
+		EE894E381F8EABD900303099 /* ActionPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE894E371F8EABD900303099 /* ActionPickerViewController.swift */; };
+		EEB9D6071F82807400396348 /* ActionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB9D6061F82807400396348 /* ActionStatus.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		EE344F281F65CA1200E4598D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		EE344F2B1F65D00800E4598D /* ActionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActionViewController.swift; path = "View Controllers/ActionViewController.swift"; sourceTree = "<group>"; };
 		EE344F2D1F65D01E00E4598D /* RecordingListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingListViewController.swift; path = "View Controllers/RecordingListViewController.swift"; sourceTree = "<group>"; };
+		EE894E371F8EABD900303099 /* ActionPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActionPickerViewController.swift; path = "View Controllers/ActionPickerViewController.swift"; sourceTree = "<group>"; };
+		EEB9D6061F82807400396348 /* ActionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionStatus.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,7 @@
 				EE344F1E1F655ABD00E4598D /* LaunchScreen.storyboard */,
 				EE344F211F655ABD00E4598D /* Info.plist */,
 				EE344F281F65CA1200E4598D /* Images.xcassets */,
+				EEB9D6061F82807400396348 /* ActionStatus.swift */,
 			);
 			path = CarController;
 			sourceTree = "<group>";
@@ -85,6 +90,7 @@
 				EE344F171F655ABD00E4598D /* RootTabBarController.swift */,
 				EE344F2B1F65D00800E4598D /* ActionViewController.swift */,
 				EE344F2D1F65D01E00E4598D /* RecordingListViewController.swift */,
+				EE894E371F8EABD900303099 /* ActionPickerViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -164,7 +170,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE344F2E1F65D01E00E4598D /* RecordingListViewController.swift in Sources */,
+				EE894E381F8EABD900303099 /* ActionPickerViewController.swift in Sources */,
 				EE344F181F655ABD00E4598D /* RootTabBarController.swift in Sources */,
+				EEB9D6071F82807400396348 /* ActionStatus.swift in Sources */,
 				EE344F161F655ABD00E4598D /* AppDelegate.swift in Sources */,
 				EE344F2C1F65D00800E4598D /* ActionViewController.swift in Sources */,
 			);
@@ -332,6 +340,7 @@
 				EE344F261F655ABD00E4598D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

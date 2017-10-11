@@ -12,29 +12,8 @@ class ActionViewController: UIViewController {
     
     @IBOutlet weak var runButton: UIButton!
     @IBOutlet weak var actionContainerView: UIView!
-    
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var statusContainerView: UIView!
-    
-    enum ActionStatus {
-        case idle,
-            freeRide,
-            collectingDataFromCamera,
-            recordingTrackWithoutCamera,
-            autonomusMode,
-            playingSavedTrack
-    
-        var statusTitle: String {
-            switch self {
-            case .idle: return "IDLE"
-            case .freeRide: return "Free Ride"
-            case .collectingDataFromCamera: return "Collecting Data From Camera"
-            case .recordingTrackWithoutCamera: return "Record Track Without Camera"
-            case .autonomusMode: return "Autonomus Ride"
-            case .playingSavedTrack: return "Playing Saved Track"
-            }
-        }
-    }
     
     var status: ActionStatus = .idle {
         didSet {
@@ -55,14 +34,18 @@ class ActionViewController: UIViewController {
         switch status {
         case .idle:
             presentModeChooser()
-            status = .autonomusMode
         default:
             status = .idle
         }
     }
     
     func presentModeChooser() {
-        
+        guard let actionPickerViewController = storyboard?.instantiateViewController(withIdentifier: "ActionPickerViewControllerId") as? ActionPickerViewController else {
+            return
+        }
+        actionPickerViewController.delegate = self
+        actionPickerViewController.modalPresentationStyle = .overFullScreen
+        present(actionPickerViewController, animated: true, completion: nil)
     }
     
 
@@ -103,5 +86,12 @@ class ActionViewController: UIViewController {
 //        activeRecordActionView.layer.removeAllAnimations()
 //        activeRecordActionView.alpha = 1
 //        view.layoutIfNeeded()
+    }
+}
+
+extension ActionViewController: ActionPickerViewControllerDelegate {
+    
+    func actionPickerViewControllerDelegateDidSelect(action: ActionStatus) {
+        status = action
     }
 }
