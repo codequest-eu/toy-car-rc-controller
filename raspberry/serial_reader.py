@@ -8,9 +8,10 @@ import sys
 class SerialReader(ContinuousTask):
 
     def __init__(self):
-        ContinuousTask.__init__(self)
+        ContinuousTask.__init__(self, True)
         self.file = sys.stdout
-        self.port = serial.Serial('/dev/ttyACM0', 9600)
+        self.port = serial.Serial('/dev/ttyACM0', 9600, timeout=0.1)
+        self.start_process()
 
     def start_saving(self, directory):
         self.queue.put(('start', directory))
@@ -30,7 +31,9 @@ class SerialReader(ContinuousTask):
 
     def run(self):
         read_serial = self.port.readline()
-        self.file.write(str(self.timestamp()) + "/" +  read_serial)
+        if read_serial:
+            self.file.write(str(self.timestamp()) + "/" +  read_serial + "\n")
+            self.file.flush()
 
     def timestamp(self):
         return int(round(time.time() * 1000))

@@ -16,7 +16,6 @@ class ExitPlugin(SimplePlugin):
   def __init__(self, bus, server):
     SimplePlugin.__init__(self, bus)
     self.server = server
-    self.started = False
 
   def exit(self):
     self.unsubscribe()
@@ -29,6 +28,7 @@ class CarServer(object):
         self.capturer = Capturer()
         self.serial_reader = SerialReader()
         self.command_executor = CommandExecutor()
+        self.started = False
 
     @cherrypy.expose
     def idle(self):

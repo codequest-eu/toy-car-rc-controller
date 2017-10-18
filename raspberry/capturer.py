@@ -6,8 +6,8 @@ import time
 class Capturer(ContinuousTask):
 
     def __init__(self):
-        ContinuousTask.__init__(self)
-        self.started = False
+        ContinuousTask.__init__(self, False)
+        self.start_process()
 
     def start(self, directory):
         self.queue.put(('start', directory))
