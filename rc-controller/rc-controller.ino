@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include <Arduino.h>
 
 #define SERVO_PIN_OUT 11 // steering servo
 #define SERVO_PIN_IN 3
@@ -56,6 +57,24 @@ int currentSteering = THROTTLE_ZERO;
 
 volatile unsigned long throttleInputStartTime = 0;
 volatile unsigned long steeringInputStartTime = 0;
+
+/* forward declarations */
+void handleCommands();
+void setInputMode(Command modeCommand);
+void applyCurrentValues();
+void throttleRise();
+void throttleFall();
+void steeringRise();
+void steeringFall();
+Command readSerialCommand();
+void enablePwmInterrupts();
+void disablePwmInterrupts();
+void steerCommand(int value);
+/* end of forward declarations */
+
+int digitalPinToInterrupt(int pin) {
+  return pin;
+}
 
 void setup() {
   steeringOut.attach(SERVO_PIN_OUT);
