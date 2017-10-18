@@ -48,7 +48,7 @@ class CarServer(object):
 
     @cherrypy.expose
     def turn(self, angle):
-        self.command_executor.make_turn(angle)
+        self.command_executor.make_turn(int(angle))
 
     @cherrypy.expose
     def start(self):

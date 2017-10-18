@@ -11,8 +11,12 @@ class CommandExecutor:
         self.ser = serial.Serial('/dev/ttyACM0', 9600)
 
     def change_status(self, status):
-        self.ser.write(status)
+        print "Changing status to %s" % status
+        self.ser.write(status.encode('utf-8'))
+        self.ser.flush()
 
     def make_turn(self, value):
         serialized = chr(value / 256) + chr(value % 256)
         self.ser.write(b'T' + serialized)
+        self.ser.flush()
+
