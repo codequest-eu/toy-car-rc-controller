@@ -17,5 +17,6 @@ class RouteSender(ContinuousTask):
         if direction:
             (wait_time, turn) = direction
             time.sleep(wait_time)
-            self.command_executor.make_turn(turn)
+            #self.command_executor.make_turn(turn)
+            print(direction)
 
