@@ -10,7 +10,7 @@
 #define THROTTLE_ZERO 1470
 #define MAX_THROTTLE 2500
 #define MAX_STEERING 2500
-#define DEFAULT_THROTTLE 1550
+#define DEFAULT_THROTTLE 1560
 
 // learning
 #define COMMAND_NO_INPUT 'I' // idle
@@ -19,7 +19,7 @@
 #define COMMAND_SERIAL_STEER 'T' // turn value
 
 int t_last_log = 0;
-int t_log_freq = 1000;
+int t_log_freq = 50;
 
 int t_last_apply = 0;
 int t_min_apply_delay = 50;
@@ -64,7 +64,7 @@ void setup() {
   pinMode(ESC_PIN_IN, INPUT);
   Serial.begin(9600);
 
-  setInputMode(commandPilotInput);
+  setInputMode(commandNoInput);
 }
 
 void loop() {
@@ -77,11 +77,11 @@ void loop() {
     t_last_apply = t;
   }
 
-//  t = millis();
-//  if (t - t_last_log > t_log_freq) {
-//    t_last_log = t;
-//    Serial.println(currentSteering);
-//  }
+  t = millis();
+  if (inputMode == inputModePilot && t - t_last_log > t_log_freq) {
+    t_last_log = t;
+    Serial.println(currentSteering);
+  }
 }
 
 void throttleRise() {
@@ -113,8 +113,6 @@ void steeringFall() {
 void handleCommands() {
   Command command;
   while (command = readSerialCommand(), command != commandEmpty) {
-    Serial.println("command read:");
-    Serial.println(command);
     if (command == commandNoInput || command == commandPilotInput || command == commandSerialInput) {
       setInputMode(command);
     } else if (command == commandSerialSteerValue) {
@@ -156,8 +154,6 @@ Command readSerialCommand() {
       uint16_t value = (uint16_t(serialInput[inputStart + 1]) << 8) |
                        serialInput[inputStart + 2];
       steerCommandValue = value; // TODO: add incorrect value flow
-      Serial.println("new steer value:");
-      Serial.println(steerCommandValue);
       inputStart += 3;
       return commandSerialSteerValue;
     }
@@ -170,12 +166,12 @@ Command readSerialCommand() {
 }
 
 void enablePwmInterrupts() { // TODO: is it safe to call it twice? same for disable
-  attachInterrupt(digitalPinToInterrupt(ESC_PIN_IN), throttleRise, RISING);
+//  attachInterrupt(digitalPinToInterrupt(ESC_PIN_IN), throttleRise, RISING);
   attachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN), steeringRise, RISING);
 }
 
 void disablePwmInterrupts() {
-  detachInterrupt(digitalPinToInterrupt(ESC_PIN_IN));
+//  detachInterrupt(digitalPinToInterrupt(ESC_PIN_IN));
   detachInterrupt(digitalPinToInterrupt(SERVO_PIN_IN));
   currentThrottle = THROTTLE_ZERO;
   currentSteering = THROTTLE_ZERO;
@@ -183,19 +179,17 @@ void disablePwmInterrupts() {
 }
 
 void steerCommand(int value) {
-  Serial.println("steer command execute");
   if (inputMode != inputModeSerial) return;
   
   currentSteering = value;
-  Serial.println(currentSteering);
 }
 
 void applyCurrentValues() {
   // Read the pulse width of 973 - 1954 for steering
   steeringOut.writeMicroseconds(currentSteering);
   if (abs(lastAppliedSteer - currentSteering) > 10) {
-    Serial.println("new steer applied:");
-    Serial.println(currentSteering);
+    logDebug("new steer applied:");
+    logDebug(String(currentSteering));
     lastAppliedSteer = currentSteering;
   }
 
@@ -205,15 +199,16 @@ void applyCurrentValues() {
 
 void setInputMode(Command modeCommand) {
   if (modeCommand == commandNoInput) {
-    Serial.println("enter idle mode");
+    logDebug("enter idle mode");
     disablePwmInterrupts();
     inputMode = inputModeNone;
   } else if (modeCommand == commandPilotInput) {
-    Serial.println("enter pilot mode");
+    logDebug("enter pilot mode");
     enablePwmInterrupts();
     inputMode = inputModePilot;
+    currentThrottle = DEFAULT_THROTTLE;
   } else if (modeCommand == commandSerialInput) {
-    Serial.println("enter serial mode");
+    logDebug("enter serial mode");
     disablePwmInterrupts();
     currentThrottle = DEFAULT_THROTTLE; // Const throttle so far, to discuss.
     inputMode = inputModeSerial;
@@ -233,3 +228,10 @@ void serialEvent2() {
     inputSize += inputLen;
   }
 }
+
+void logDebug(String message) {
+  if (inputMode != inputModePilot) { // tmp, in input mode we need to print only steer values
+    Serial.println(message);
+  }
+}
+
