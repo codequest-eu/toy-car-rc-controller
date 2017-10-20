@@ -4,13 +4,14 @@ import os
 import serial
 import time
 import sys
+import serial_port
 
 class SerialReader(ContinuousTask):
 
     def __init__(self):
         ContinuousTask.__init__(self, True)
         self.file = sys.stdout
-        self.port = serial.Serial('/dev/ttyACM0', 9600, timeout=0.1)
+        self.port = serial.Serial(serial_port.available_name(), 9600, timeout=0.1)
         self.start_process()
 
     def start_saving(self, directory):
@@ -22,8 +23,7 @@ class SerialReader(ContinuousTask):
     def handle_command(self):
         (command, directory) = self.get_command()
         if command == 'start':
-            os.chdir(directory)
-            self.file = open("log", "w")
+            self.file = open("%s/log" % directory, "w")
         elif command == 'stop':
             if self.file != sys.stdout:
                 self.file.close()
@@ -32,8 +32,10 @@ class SerialReader(ContinuousTask):
     def run(self):
         read_serial = self.port.readline()
         if read_serial:
-            self.file.write(str(self.timestamp()) + "/" +  read_serial + "\n")
-            self.file.flush()
+            read_serial = read_serial.strip()
+            if self.file == sys.stdout or read_serial.isdigit():
+                self.file.write('%d/%s\n' % (self.timestamp(), read_serial))
+                self.file.flush()
 
     def timestamp(self):
         return int(round(time.time() * 1000))

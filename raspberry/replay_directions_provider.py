@@ -11,12 +11,13 @@ class ReplayDirectionsProvider:
         self.file.close()
 
     def __iter__(self):
-        while True:
-            line = self.file.readline()
-            if not line:
-                break
-            timestamp, direction = line.strip().split('/')
-            wait = timestamp - self.last_timestamp if self.last_timestamp else 0
-            self.last_timestamp = timestamp
-            yield (wait, direction)
+        return self
 
+    def next(self):
+        line = self.file.readline()
+        if not line:
+            raise StopIteration()
+        timestamp, direction = map(int, line.strip().split('/'))
+        wait = timestamp - self.last_timestamp if self.last_timestamp else 0
+        self.last_timestamp = timestamp
+        return (wait, direction)
