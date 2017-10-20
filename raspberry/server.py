@@ -25,6 +25,12 @@ class ExitPlugin(SimplePlugin):
 
 class CarServer(object):
 
+    def directory_for_session(self):
+        directory = "session-%s" % self.timestamp()
+        images = "%s/images" % directory
+        os.makedirs(images)
+        return directory
+    
     def __init__(self):
         self.timezone = pytz.timezone('Europe/Warsaw')
         self.capturer = Capturer()
@@ -59,6 +65,7 @@ class CarServer(object):
         self.replay_started = True
         directions = ReplayDirectionsProvider(directory)
         self.route_sender = RouteSender(self.command_executor, directions)
+        self.autonomous()
 
     @cherrypy.expose
     def start(self):
@@ -69,11 +76,12 @@ class CarServer(object):
             cherrypy.response.status = 400
             return "WARNING: Replay in progress"
 
-        directory = directory_for_session()
+        directory = self.directory_for_session()
         self.started = True
 
         self.capturer.start(directory)
         self.serial_reader.start_saving(directory)
+        self.remote()
 
         return "INFO: Session %s has been started" % directory
 
@@ -83,6 +91,7 @@ class CarServer(object):
            cherrypy.response.status = 400
            return "WARNING: Neither session nor replay not started"
        if self.started:
+           self.idle()
            self.cleanup()
            return "INFO: Session ended successfully"
        else:
@@ -104,13 +113,8 @@ class CarServer(object):
             return
 
         self.capturer.stop()
-        self.serial_reader.stop()
-
-    def directory_for_session(self):
-        directory = "session-%s" % self.timestamp()
-        images = "%s/images" % directory
-        os.makedirs(images)
-        return directory
+        self.serial_reader.stop_saving()
+        self.started = False
 
     def timestamp(self):
         utc_dt = datetime.datetime.now(pytz.utc)
