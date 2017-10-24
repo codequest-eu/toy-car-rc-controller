@@ -10,6 +10,8 @@ from capturer import Capturer
 from serial_reader import SerialReader
 from interrupt_handler import InterruptHandler
 from command_executor import CommandExecutor, Status
+from route_sender import RouteSender
+from replay_directions_provider import ReplayDirectionsProvider
 
 class ExitPlugin(SimplePlugin):
 
@@ -19,16 +21,24 @@ class ExitPlugin(SimplePlugin):
 
   def exit(self):
     self.unsubscribe()
-    self.server.cleanup()
+    self.server.terminate()
 
 class CarServer(object):
 
+    def directory_for_session(self):
+        directory = "session-%s" % self.timestamp()
+        images = "%s/images" % directory
+        os.makedirs(images)
+        return directory
+    
     def __init__(self):
         self.timezone = pytz.timezone('Europe/Warsaw')
-        self.terminator = Value('i', 1)
-        self.capturer = None
-        self.serial_reader = None
+        self.capturer = Capturer()
+        self.serial_reader = SerialReader()
         self.command_executor = CommandExecutor()
+        self.route_sender = None
+        self.started = False
+        self.replay_started = False
 
     @cherrypy.expose
     def idle(self):
@@ -48,47 +58,63 @@ class CarServer(object):
 
     @cherrypy.expose
     def turn(self, angle):
-        self.command_executor.make_turn(angle)
+        self.command_executor.make_turn(int(angle))
+
+    @cherrypy.expose
+    def replay(self, directory):
+        self.replay_started = True
+        directions = ReplayDirectionsProvider(directory)
+        self.route_sender = RouteSender(self.command_executor, directions)
+        self.autonomous()
 
     @cherrypy.expose
     def start(self):
-        if self.terminator.value == 0:
+        if self.started:
             cherrypy.response.status = 400
             return "WARNING: Session already started"
-            
-        directory = directory_for_session()
-        self.terminator.value = 0
+        if self.replay_started:
+            cherrypy.response.status = 400
+            return "WARNING: Replay in progress"
 
-        self.capturer = Capturer(directory, self.terminator)
-        self.serial_reader = SerialReader(directory, self.terminator)
+        directory = self.directory_for_session()
+        self.started = True
 
-        self.capturer.start()
-        self.serial_reader.start()
+        self.capturer.start(directory)
+        self.serial_reader.start_saving(directory)
+        self.remote()
+
         return "INFO: Session %s has been started" % directory
 
     @cherrypy.expose
     def stop(self):
-       if self.terminator.value == 1:
+       if not self.started and not self.replay_started:
            cherrypy.response.status = 400
-           return "WARNING: Session not started"
-       self.cleanup()
-       return "INFO: Session ended successfully"
+           return "WARNING: Neither session nor replay not started"
+       if self.started:
+           self.idle()
+           self.cleanup()
+           return "INFO: Session ended successfully"
+       else:
+           self.stop_replay()
+           return "INFO: Replay ended successfully"
+
+    def stop_replay(self):
+        self.replay_started = False
+        self.route_sender.terminate()
+        self.route_sender = None
+
+    def terminate(self):
+        self.cleanup()
+        self.capturer.terminate()
+        self.serial_reader.terminate()
 
     def cleanup(self):
-        if self.terminator.value == 1:
+        if not self.started:
             return
-        self.terminator.value = 1
-        self.capturer.join()
-        self.serial_reader.join()
 
-        self.capturer = None
-        self.serial_reader = None 
-
-    def directory_for_session(self):
-        directory = "session-%s" % self.timestamp()
-        images = "%s/images" % directory
-        os.makedirs(images)
-        return directory
+        self.capturer.stop()
+        self.serial_reader.stop_saving()
+        self.started = False
 
     def timestamp(self):
         utc_dt = datetime.datetime.now(pytz.utc)
