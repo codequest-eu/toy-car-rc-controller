@@ -5,7 +5,7 @@ def available_name():
     return names[0]
 
 def main():
-    print available_name()
+    print(available_name())
 
 if __name__ == '__main__':
     main()

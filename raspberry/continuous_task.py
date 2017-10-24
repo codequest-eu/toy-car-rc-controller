@@ -1,6 +1,6 @@
 import abc
 from multiprocessing import Value, Queue, Process
-import Queue as BaseQueue
+import queue as BaseQueue
 import signal
 
 class ContinuousTask:
