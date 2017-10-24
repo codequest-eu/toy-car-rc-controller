@@ -194,7 +194,7 @@ void applyCurrentValues() {
   }
 
   // Read the pulse width of 973 - 1954 for thr
-  throttleOut.writeMicroseconds(currentThrottle);
+  throttleOut.writeMicroseconds(compensated_throttle());
 }
 
 void setInputMode(Command modeCommand) {
@@ -213,6 +213,12 @@ void setInputMode(Command modeCommand) {
     currentThrottle = DEFAULT_THROTTLE; // Const throttle so far, to discuss.
     inputMode = inputModeSerial;
   }
+}
+
+int compensated_throttle() {
+  int compensation = abs(currentSteering - THROTTLE_ZERO) / 50;
+  
+  return currentThrottle + compensation;
 }
 
 void serialEvent2() {
