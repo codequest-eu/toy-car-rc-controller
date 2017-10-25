@@ -19,6 +19,6 @@ class CommandExecutor:
     def make_turn(self, value):
         print("Turn %d" % value)
         serialized = chr(value // 256) + chr(value % 256)
-        self.ser.write(b'T' + serialized)
+        self.ser.write(b'T' + serialized.encode('utf-8'))
         self.ser.flush()
 
