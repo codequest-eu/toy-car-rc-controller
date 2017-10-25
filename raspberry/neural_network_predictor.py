@@ -21,9 +21,6 @@ class NeuralNetworkPredictor:
         self.model.load_weights('out.h5')
         print('weights loaded')
 
-    def predict(self, frame):
-        return self.predict_angle(frame.array)
-
     def preprocess_image(self, image):
         image = image[:, :320]
         image = imutils.rotate_bound(image, 270)
