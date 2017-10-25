@@ -33,9 +33,12 @@ class SerialReader(ContinuousTask):
         read_serial = self.port.readline()
         if read_serial:
             read_serial = read_serial.strip()
-            if self.file == sys.stdout or read_serial.isdigit():
-                self.file.write('%d/%s\n' % (self.timestamp(), read_serial))
+            if read_serial.isdigit():
+                self.file.write('%d/%d\n' % (self.timestamp(), int(read_serial)))
                 self.file.flush()
+            else:
+                sys.stdout.write('%d/%s\n' % (self.timestamp(), read_serial))
+                sys.stdout.flush()
 
     def timestamp(self):
         return int(round(time.time() * 1000))
