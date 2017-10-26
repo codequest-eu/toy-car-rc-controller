@@ -1,15 +1,16 @@
 import abc
 from multiprocessing import Value, Queue, Process
-import Queue as BaseQueue
+import queue as BaseQueue
 import signal
 
 class ContinuousTask:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, started):
+    def __init__(self, started, initialized_queue = Queue()):
         self.terminator = Value('i', 0)
         self.started = started
         self.queue = Queue()
+        self.initialized_queue = initialized_queue
 
     def start_process(self):
         self.process = ContinuousProcess(self)
@@ -40,6 +41,12 @@ class ContinuousTask:
     def run(self):
         pass
 
+    def initialize(self):
+        pass
+
+    def destroy(self):
+        pass
+
 class ContinuousProcess(Process):
 
         def __init__(self, task):
@@ -49,6 +56,9 @@ class ContinuousProcess(Process):
 
         def run(self):
             signal.signal(signal.SIGINT, signal.SIG_IGN)
+            self.task.initialize()
+            self.task.initialized_queue.put(True)
             while not self.task.terminated():
                 self.task.handle_command()
                 self.task.run()
+            self.task.destroy()
