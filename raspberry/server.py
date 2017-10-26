@@ -1,5 +1,5 @@
 import os
-from multiprocessing import Value
+from multiprocessing import Value, Queue
 import signal
 import datetime
 import time
@@ -71,8 +71,12 @@ class CarServer(object):
     def drive(self):
         self.driving_started = True
         directions = CameraDirectionsProvider()
-        self.route_sender = RouteSender(self.command_executor, directions)
-        self.autonomous()
+        initialized_queue = Queue()
+        self.route_sender = RouteSender(self.command_executor, directions, initialized_queue)
+        print("Waiting for initialization")
+        if initialized_queue.get():
+            print("Initialization completed")
+            self.autonomous()
 
     @cherrypy.expose
     def start(self):
@@ -84,8 +88,7 @@ class CarServer(object):
             return "WARNING: Driving in progress"
 
         directory = self.directory_for_session()
-        self.started = True
-
+        self.started = Tru
         self.capturer.start(directory)
         self.serial_reader.start_saving(directory)
         self.remote()
@@ -103,7 +106,7 @@ class CarServer(object):
            return "INFO: Session ended successfully"
        else:
            self.stop_driving()
-           return "INFO: Replay ended successfully"
+           return "INFO: Driving ended successfully"
 
     def stop_driving(self):
         self.driving_started = False
