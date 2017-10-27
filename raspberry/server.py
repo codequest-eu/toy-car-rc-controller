@@ -88,7 +88,7 @@ class CarServer(object):
             return "WARNING: Driving in progress"
 
         directory = self.directory_for_session()
-        self.started = Tru
+        self.started = True
         self.capturer.start(directory)
         self.serial_reader.start_saving(directory)
         self.remote()
