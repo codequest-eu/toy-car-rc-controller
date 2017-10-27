@@ -16,7 +16,7 @@ from collections import Counter
 INPUT_SHAPE = (64, 64, 1)
 LEARNING_RATE = 1e-1
 BATCH_SIZE = 128
-EPOCHS = 50
+EPOCHS = 100
 
 def parse_dirnames():
     parser = argparse.ArgumentParser(description='Correlates steering with images')
@@ -75,12 +75,21 @@ def squeeze_model_52():
     model.compile(optimizer=Adam(lr=LEARNING_RATE), loss='mse')
     return model
 
-def visualize(labels):
+def visualize_dataset(labels):
     plt.plot(labels)
     plt.show()
     
     values, freq = zip(*Counter(labels).items())
     plt.bar(values, freq)
+    plt.show()
+
+def visualize_history(history):
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
     plt.show()
 
 if __name__ == '__main__':
@@ -89,12 +98,13 @@ if __name__ == '__main__':
     features, labels = prepare_from_paths(parse_dirnames())
     # visualize(labels)
     features = np.array(features).reshape(len(features), 64, 64, 1)
-    model.fit(x=features,
-              y=labels,
-              verbose=1,
-              batch_size=BATCH_SIZE,
-              epochs=EPOCHS,
-              validation_split=0.3)
+    history = model.fit(x=features,
+                        y=labels,
+                        verbose=1,
+                        batch_size=BATCH_SIZE,
+                        epochs=EPOCHS,
+                        validation_split=0.3)
 
     model.save_weights('out.h5')
     print("Training complete!")
+    visualize_history(history)
