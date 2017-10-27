@@ -9,6 +9,8 @@ from keras.optimizers import Adam
 import numpy as np
 from sklearn.utils import shuffle
 from preprocess_dataset import prepare_from_paths
+import matplotlib.pyplot as plt
+from collections import Counter
 
 #hyperparameters
 INPUT_SHAPE = (64, 64, 1)
@@ -73,10 +75,19 @@ def squeeze_model_52():
     model.compile(optimizer=Adam(lr=LEARNING_RATE), loss='mse')
     return model
 
+def visualize(labels):
+    plt.plot(labels)
+    plt.show()
+    
+    values, freq = zip(*Counter(labels).items())
+    plt.bar(values, freq)
+    plt.show()
+
 if __name__ == '__main__':
     model = squeeze_model_52()
 
     features, labels = prepare_from_paths(parse_dirnames())
+    # visualize(labels)
     features = np.array(features).reshape(len(features), 64, 64, 1)
     model.fit(x=features,
               y=labels,
