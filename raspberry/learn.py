@@ -16,7 +16,7 @@ from collections import Counter
 INPUT_SHAPE = (64, 64, 1)
 LEARNING_RATE = 1e-1
 BATCH_SIZE = 128
-EPOCHS = 40
+EPOCHS = 20
 
 def parse_dirnames():
     parser = argparse.ArgumentParser(description='Correlates steering with images')
@@ -75,6 +75,59 @@ def squeeze_model_52():
     model.compile(optimizer=Adam(lr=LEARNING_RATE), loss='mse')
     return model
 
+def squeeze_model_159():
+    """
+    This model is a modification from the reference:
+    https://github.com/rcmalli/keras-squeezenet/blob/master/squeezenet.py
+    
+    Normalizing will be done in the model directly for GPU speedup 
+    """
+    input_shape=(64, 64, 1)
+    input_img = Input(shape=input_shape)
+    x = Lambda(lambda x: x/127.5 - 1.,input_shape=input_shape)(input_img)
+    
+    x = Convolution2D(1, (3, 3), strides=(2, 2), padding='valid', name='conv1')(x)
+    x = Activation('elu', name='elu_conv1')(x)
+    x = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='pool1')(x)
+
+    x = fire_module(x, fire_id=2, squeeze=2, expand=6)
+    x = Dropout(0.2, name='drop9')(x)
+
+
+    x = GlobalAveragePooling2D()(x)
+    out = Dense(1, name='loss')(x)
+    model = Model(inputs=[input_img], outputs=[out])
+    
+    model.compile(optimizer=Adam(lr=LEARNING_RATE), loss='mse')
+    return model
+
+def squeeze_model_1005():
+    """
+    This model is a modification from the reference:
+    https://github.com/rcmalli/keras-squeezenet/blob/master/squeezenet.py
+    
+    Normalizing will be done in the model directly for GPU speedup 
+    """
+    input_shape=(64, 64, 1)
+    input_img = Input(shape=input_shape)
+    x = Lambda(lambda x: x/127.5 - 1.,input_shape=input_shape)(input_img)
+    
+    x = Convolution2D(2, (3, 3), strides=(2, 2), padding='valid', name='conv1')(x)
+    x = Activation('elu', name='elu_conv1')(x)
+    x = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='pool1')(x)
+
+    x = fire_module(x, fire_id=2, squeeze=2, expand=6)
+    x = fire_module(x, fire_id=3, squeeze=6, expand=12)
+    x = Dropout(0.2, name='drop9')(x)
+
+
+    x = GlobalAveragePooling2D()(x)
+    out = Dense(1, name='loss')(x)
+    model = Model(inputs=[input_img], outputs=[out])
+    
+    model.compile(optimizer=Adam(lr=LEARNING_RATE), loss='mse')
+    return model
+
 def visualize_dataset(labels):
     plt.plot(labels)
     plt.show()
@@ -92,8 +145,17 @@ def visualize_history(history):
     plt.legend(['train', 'validation'], loc='upper left')
     plt.show()
 
+def save_network():
+    print("Saving network.")
+    json_model = model.to_json()
+    with open('out.json', 'w') as file:
+        file.write(json_model)
+    print("Network saved. Exiting.")
+    exit(0)
+
 if __name__ == '__main__':
-    model = squeeze_model_52()
+    model = squeeze_model_1005()
+    # save_network()
 
     features, labels = prepare_from_paths(parse_dirnames())
     # visualize(labels)
