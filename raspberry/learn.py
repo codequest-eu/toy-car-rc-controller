@@ -16,7 +16,7 @@ from collections import Counter
 INPUT_SHAPE = (64, 64, 1)
 LEARNING_RATE = 1e-1
 BATCH_SIZE = 128
-EPOCHS = 100
+EPOCHS = 40
 
 def parse_dirnames():
     parser = argparse.ArgumentParser(description='Correlates steering with images')

@@ -10,7 +10,7 @@
 #define THROTTLE_ZERO 1470
 #define MAX_THROTTLE 2500
 #define MAX_STEERING 2500
-#define DEFAULT_THROTTLE 1540
+#define DEFAULT_THROTTLE 1536
 
 // learning
 #define COMMAND_NO_INPUT 'I' // idle
@@ -216,7 +216,7 @@ void setInputMode(Command modeCommand) {
 }
 
 int compensated_throttle() {
-  int compensation = abs(currentSteering - THROTTLE_ZERO) / 55;
+  int compensation = abs(currentSteering - THROTTLE_ZERO) / 60;
   
   return currentThrottle + compensation;
 }
