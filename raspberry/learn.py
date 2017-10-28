@@ -16,7 +16,7 @@ from collections import Counter
 INPUT_SHAPE = (64, 64, 1)
 LEARNING_RATE = 1e-1
 BATCH_SIZE = 128
-EPOCHS = 10
+EPOCHS = 25
 
 def parse_dirnames():
     parser = argparse.ArgumentParser(description='Correlates steering with images')
@@ -135,7 +135,6 @@ def visualize_dataset(labels):
     values, freq = zip(*Counter(labels).items())
     plt.bar(values, freq)
     plt.show()
-    exit(0)
 
 def visualize_history(history):
     plt.plot(history.history['loss'])
