@@ -16,7 +16,7 @@ from collections import Counter
 INPUT_SHAPE = (64, 64, 1)
 LEARNING_RATE = 1e-1
 BATCH_SIZE = 128
-EPOCHS = 25
+EPOCHS = 50
 
 def parse_dirnames():
     parser = argparse.ArgumentParser(description='Correlates steering with images')
@@ -154,7 +154,8 @@ def save_network():
     exit(0)
 
 if __name__ == '__main__':
-    model = squeeze_model_1005()
+    # model = squeeze_model_1005()
+    model = squeeze_model_159()
     # save_network()
 
     features, labels = prepare_from_paths(parse_dirnames())

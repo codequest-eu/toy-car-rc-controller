@@ -7,7 +7,7 @@ from random import random
 MIDDLE_POINT = 1512
 
 def preprocess_image(image):
-    processed_image = image[:, :320]
+    processed_image = image[:, :320] #TODO: even smaller part of the image?
     processed_image = imutils.rotate_bound(processed_image, 270)
     processed_image = cv2.resize(processed_image, (64, 64), cv2.INTER_AREA)
     return cv2.cvtColor(processed_image, cv2.COLOR_RGB2HSV)[:,:,2]
@@ -25,17 +25,18 @@ def prepare_from_path(path):
 
     images, labels = list(map(lambda x: load_image(path + '/' + x[3]), csv_data)), list(map(lambda x: int(x[2]), csv_data))
     for index, label in enumerate(labels):
+        # cv2.imshow(str(label), images[index])
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
         if abs(label - MIDDLE_POINT) > 30:
             result_images.append(images[index])
             result_labels.append(label)
+
             flipped_image = cv2.flip(images[index], 1)
             flipped_label = 2*MIDDLE_POINT - label
-            # cv2.imshow(str(label), images[index])
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
             result_images.append(flipped_image)
             result_labels.append(flipped_label)
-        elif random() < 0.4: # discard 60% of stright angle data
+        elif random() < 1.0: # discard n% of stright angle data
             result_images.append(images[index])
             result_labels.append(label)
 
