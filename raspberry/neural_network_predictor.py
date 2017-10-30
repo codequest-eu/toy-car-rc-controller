@@ -15,7 +15,7 @@ class NeuralNetworkPredictor:
         result = float(self.model.predict(image.reshape(1, 64, 64, 1), batch_size=1))
         denormalized_result = denormalized_label(result)
         # interpolated = 1470 + result * 490
-        return int(result)
+        return int(denormalized_result)
 
     def initialize(self):
         print('loading model')
