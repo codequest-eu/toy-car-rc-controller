@@ -6,13 +6,14 @@ from keras.models import load_model
 import cv2
 import imutils
 
-from preprocess_dataset import preprocess_image
+from preprocess_dataset import preprocess_image, denormalized_label
 
 class NeuralNetworkPredictor:
 
     def predict_angle(self, image):
         image = preprocess_image(image)
         result = float(self.model.predict(image.reshape(1, 64, 64, 1), batch_size=1))
+        denormalized_result = denormalized_label(result)
         # interpolated = 1470 + result * 490
         return int(result)
 
