@@ -18,11 +18,11 @@ class CommandExecutor:
 
     def make_turn(self, value):
         print("Turn %d" % value)
-        self.send_int_command('T', value)
+        self.send_int_command(b'T', value)
 
     def set_speed(self, value):
         print("Set speed %d" % value)
-        self.send_int_command('S', value)
+        self.send_int_command(b'S', value)
 
     def send_int_command(self, command, value):
         serialized = chr(value // 256) + chr(value % 256)
