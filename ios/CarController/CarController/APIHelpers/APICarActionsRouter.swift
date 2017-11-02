@@ -9,21 +9,16 @@
 import Foundation
 import Alamofire
 
-enum APICarActionsRouter: URLRequestConvertible, APIUrlPath {
+struct APICarActionsRouter: URLRequestConvertible, APIUrlPath {
 
-    case idle
-    case freeRide
-    case collectingDataFromCamera
-    case recordingTrackWithoutCamera
-    case autonomusMode
-    case playingSavedTrack
+    var action: ActionType
     
     var method: HTTPMethod {
         return .get
     }
     
     var path: String {
-        switch self {
+        switch action {
         case .idle: return "/idle"
         case .freeRide: return ""
         case .collectingDataFromCamera: return ""

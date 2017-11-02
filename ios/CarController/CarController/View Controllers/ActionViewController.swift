@@ -15,9 +15,9 @@ class ActionViewController: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var statusContainerView: UIView!
     
-    var status: ActionStatus = .idle {
+    var status: ActionType = .idle {
         didSet {
-            habdleActionChanges()
+            handleActionChanges()
         }
     }
     
@@ -36,6 +36,7 @@ class ActionViewController: UIViewController {
             presentModeChooser()
         default:
             status = .idle
+            perform(action: .idle)
         }
     }
     
@@ -51,7 +52,7 @@ class ActionViewController: UIViewController {
 
     //MARK: Private functions
     
-    private func habdleActionChanges() {
+    private func handleActionChanges() {
         switch status {
         case .idle:
             updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "play-button"))])
@@ -87,11 +88,16 @@ class ActionViewController: UIViewController {
 //        activeRecordActionView.alpha = 1
 //        view.layoutIfNeeded()
     }
+    
+    fileprivate func perform(action: ActionType) {
+        
+    }
 }
 
 extension ActionViewController: ActionPickerViewControllerDelegate {
     
-    func actionPickerViewControllerDelegateDidSelect(action: ActionStatus) {
+    func actionPickerViewControllerDelegateDidSelect(action: ActionType) {
         status = action
+        perform(action: action)
     }
 }

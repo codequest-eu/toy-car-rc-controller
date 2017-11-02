@@ -6,7 +6,7 @@
 //  Copyright © 2017 CodeQuest. All rights reserved.
 //
 
-enum ActionStatus {
+enum ActionType {
     
     case idle,
     freeRide,
@@ -17,16 +17,16 @@ enum ActionStatus {
     
     var statusTitle: String {
         switch self {
-        case .idle: return "IDLE"
-        case .freeRide: return "Free Ride"
-        case .collectingDataFromCamera: return "Collecting Data From Camera"
-        case .recordingTrackWithoutCamera: return "Record Track Without Camera"
-        case .autonomusMode: return "Autonomus Ride"
-        case .playingSavedTrack: return "Playing Saved Track"
+        case .idle:                         return "IDLE"
+        case .freeRide:                     return "Free Ride"
+        case .collectingDataFromCamera:     return "Collecting Data From Camera"
+        case .recordingTrackWithoutCamera:  return "Record Track Without Camera"
+        case .autonomusMode:                return "Autonomus Ride"
+        case .playingSavedTrack:            return "Playing Saved Track"
         }
     }
     
-    static var allValues: [ActionStatus] {
+    static var allValues: [ActionType] {
         return [.idle,
                 .freeRide,
                 .collectingDataFromCamera,
