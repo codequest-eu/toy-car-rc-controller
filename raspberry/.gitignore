@@ -1,3 +1,5 @@
 session-*
 **/*.pyc
 out.h5
+out.json
+test_video/

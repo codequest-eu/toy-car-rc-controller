@@ -43,7 +43,7 @@ def prepare_from_path(path):
             # flipped_label = 2*MIDDLE_POINT - label
             # result_images.append(flipped_image)
             # result_labels.append(flipped_label)
-        elif random() < 0.5: # discard n% of stright angle data
+        elif random() < 0.55: # discard n% of stright angle data
             result_images.append(images[index])
             result_labels.append(normalized)
 
