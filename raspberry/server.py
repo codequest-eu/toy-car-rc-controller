@@ -4,7 +4,9 @@ import signal
 import datetime
 import time
 import pytz
+import glob
 import cherrypy
+import json
 from cherrypy.process.plugins import SimplePlugin
 from capturer import Capturer
 from serial_reader import SerialReader
@@ -13,6 +15,7 @@ from command_executor import CommandExecutor, Status
 from route_sender import RouteSender
 from replay_directions_provider import ReplayDirectionsProvider
 from camera_directions_provider import CameraDirectionsProvider
+from sessions_provider import SessionsProvider
 
 class ExitPlugin(SimplePlugin):
 
@@ -57,6 +60,10 @@ class CarServer(object):
         self.command_executor.change_status(Status.AUTONOMOUS)
 
     @cherrypy.expose
+    def speed(self, value):
+        self.command_executor.set_speed(int(value))
+
+    @cherrypy.expose
     def turn(self, angle):
         self.command_executor.make_turn(int(angle))
 
@@ -66,6 +73,12 @@ class CarServer(object):
         directions = ReplayDirectionsProvider(directory)
         self.route_sender = RouteSender(self.command_executor, directions)
         self.autonomous()
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def sessions(self):
+        sessions_provider = SessionsProvider(os.getcwd())
+        return sessions_provider.get_sessions()
 
     @cherrypy.expose
     def drive(self):
