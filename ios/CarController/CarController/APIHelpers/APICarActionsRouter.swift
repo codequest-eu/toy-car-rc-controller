@@ -21,21 +21,19 @@ struct APICarActionsRouter: URLRequestConvertible, APIUrlPath {
         switch action {
         case .idle: return "/idle"
         case .stop: return "/stop"
-        case .freeRemoteRide: return "/remote" //zmienić nazwę
-//        case .collectingDataFromCamera: return "/learning"
-//        case .recordingTrackWithoutCamera: return ""
+        case .freeRemoteRide: return "/remote"
+//        case .collectingDataFromCamera: return "/learning" //in the future
+//        case .recordingTrackWithoutCamera: return "" //in the future
         case .autonomusMode: return "/drive"
-//        case .playingSavedTrack: return "" //replay - nie potrzebujemy w pierwszym rzucie
+//        case .playingSavedTrack: return "" //replay - nie potrzebujemy w pierwszym rzucie //in the future
         case .changeSpeed(let speed): return "/speed?value=\(speed)"
 
-            //start - start recording i stop nagrywa dla replpaya
+            //info: start - start recording i stop nagrywa dla replpaya
         }
     }
     
     public func asURLRequest() throws -> URLRequest {
-        let  request = carAPIRequest()
-//        let urlParams = "?test=TEST&test=TEST"
-        return request
+        return carAPIRequest()
     }
 }
 
