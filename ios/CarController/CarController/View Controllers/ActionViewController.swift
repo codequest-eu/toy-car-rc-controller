@@ -16,6 +16,8 @@ class ActionViewController: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var statusContainerView: UIView!
     @IBOutlet weak var velocityLabel: UILabel!
+    @IBOutlet weak var plusVelocityButton: UIButton!
+    @IBOutlet weak var minusVelocityButton: UIButton!
     
     var currentVelocity = 1536 {
         didSet {
@@ -65,7 +67,6 @@ class ActionViewController: UIViewController {
         perform(action: .changeSpeed(currentVelocity - defaultVelocityChangeValue))
     }
     
-    
     func presentModeChooser() {
         guard let actionPickerViewController = storyboard?.instantiateViewController(withIdentifier: "ActionPickerViewControllerId") as? ActionPickerViewController else {
             return
@@ -74,7 +75,6 @@ class ActionViewController: UIViewController {
         actionPickerViewController.modalPresentationStyle = .overFullScreen
         present(actionPickerViewController, animated: true, completion: nil)
     }
-    
 
     //MARK: Private functions
     
@@ -100,6 +100,7 @@ class ActionViewController: UIViewController {
     }
     
     private func setupRecordingButtons(withAlpha alpha: CGFloat) {
+        
     }
     
     private func animateRecording() {
@@ -116,9 +117,12 @@ class ActionViewController: UIViewController {
     
     fileprivate func perform(action: ActionType) {
         SVProgressHUD.show()
+        blockButtons(isActionPerforming: true)
         
         CarActionsAPIHelper().request(action: action) { (success, error) in
             SVProgressHUD.dismiss()
+            self.blockButtons(isActionPerforming: false)
+            
             guard let errorMsg = error, !success else {
                 switch action {
                 case .changeSpeed(let updatedSpeed):
@@ -132,6 +136,12 @@ class ActionViewController: UIViewController {
             alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
+    }
+    
+    private func blockButtons(isActionPerforming: Bool) {
+        runButton.isUserInteractionEnabled = !isActionPerforming
+        plusVelocityButton.isUserInteractionEnabled = !isActionPerforming
+        minusVelocityButton.isUserInteractionEnabled = !isActionPerforming
     }
 }
 

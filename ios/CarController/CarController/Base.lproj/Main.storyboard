@@ -231,6 +231,8 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="actionContainerView" destination="kj2-DD-fXm" id="zKf-Gf-PJO"/>
+                        <outlet property="minusVelocityButton" destination="OrJ-cC-aDC" id="ErE-ja-x7j"/>
+                        <outlet property="plusVelocityButton" destination="i9e-sE-mgi" id="AjI-X5-Ytn"/>
                         <outlet property="runButton" destination="QzL-UA-6yf" id="fpG-2E-xGL"/>
                         <outlet property="statusContainerView" destination="GCP-wn-OAc" id="Ks8-bS-HHR"/>
                         <outlet property="statusLabel" destination="vfj-bM-mBG" id="iUe-9E-yC4"/>
