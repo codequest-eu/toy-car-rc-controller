@@ -1,0 +1,6 @@
+framework module Pods_CarController {
+  umbrella header "Pods-CarController-umbrella.h"
+
+  export *
+  module * { export * }
+}
