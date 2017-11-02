@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class ActionViewController: UIViewController {
     
@@ -14,6 +15,14 @@ class ActionViewController: UIViewController {
     @IBOutlet weak var actionContainerView: UIView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var statusContainerView: UIView!
+    @IBOutlet weak var velocityLabel: UILabel!
+    
+    var currentVelocity = 1536 {
+        didSet {
+            velocityLabel.text = "Velocity \(currentVelocity)"
+        }
+    }
+    let defaultVelocityChangeValue = 5
     
     var status: ActionType = .stop {
         didSet {
@@ -48,6 +57,15 @@ class ActionViewController: UIViewController {
         }
     }
     
+    @IBAction func increaseVelocity(_ sender: Any) {
+        perform(action: .changeSpeed(currentVelocity + defaultVelocityChangeValue))
+    }
+    
+    @IBAction func decreaseVelocity(_ sender: Any) {
+        perform(action: .changeSpeed(currentVelocity - defaultVelocityChangeValue))
+    }
+    
+    
     func presentModeChooser() {
         guard let actionPickerViewController = storyboard?.instantiateViewController(withIdentifier: "ActionPickerViewControllerId") as? ActionPickerViewController else {
             return
@@ -62,7 +80,7 @@ class ActionViewController: UIViewController {
     
     private func handleActionChanges() {
         switch status {
-        case .stop:
+        case .stop, .idle:
             updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "play-button"))])
         default:
             updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "stop-button"))])
@@ -97,12 +115,19 @@ class ActionViewController: UIViewController {
     }
     
     fileprivate func perform(action: ActionType) {
+        SVProgressHUD.show()
+        
         CarActionsAPIHelper().request(action: action) { (success, error) in
+            SVProgressHUD.dismiss()
             guard let errorMsg = error, !success else {
-                self.status = action
+                switch action {
+                case .changeSpeed(let updatedSpeed):
+                    self.currentVelocity = updatedSpeed
+                default:
+                    self.status = action
+                }
                 return
             }
-            
             let alert = UIAlertController(title: "Error", message: errorMsg, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)

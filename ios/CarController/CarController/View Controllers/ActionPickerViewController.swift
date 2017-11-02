@@ -71,8 +71,8 @@ extension ActionPickerViewController: UITableViewDataSource {
 extension ActionPickerViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(allStatuses[indexPath.row])
-        delegate?.actionPickerViewControllerDelegateDidSelect(action: allStatuses[indexPath.row])
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: {
+            self.delegate?.actionPickerViewControllerDelegateDidSelect(action: self.allStatuses[indexPath.row])
+        })
     }
 }
