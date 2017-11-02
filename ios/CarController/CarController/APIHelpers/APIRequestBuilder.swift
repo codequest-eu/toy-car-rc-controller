@@ -17,8 +17,6 @@ public protocol APIUrlPath {
 public protocol APIRequestBuilder {
     var baseURL: String { get }
     func carAPIRequest() -> URLRequest
-//    func gerUrlRequest(params: [String: Any], request: URLRequest) -> URLRequest
-//    func getJSONRequest(params: [String: Any], request: URLRequest) -> URLRequest
 }
 
 public extension APIRequestBuilder where Self: APIUrlPath {
@@ -33,12 +31,4 @@ public extension APIRequestBuilder where Self: APIUrlPath {
         request.httpMethod = method.rawValue
         return request
     }
-    
-//    func gerUrlRequest(params: [String: Any], request: URLRequest) -> URLRequest {
-//        return try! Alamofire.URLEncoding.default.encode(request, with: params)
-//    }
-//
-//    func getJSONRequest(params: [String: Any], request: URLRequest) -> URLRequest {
-//        return try! Alamofire.JSONEncoding.default.encode(request, with: params)
-//    }
 }

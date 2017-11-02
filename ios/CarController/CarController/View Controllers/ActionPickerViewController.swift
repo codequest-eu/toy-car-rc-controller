@@ -9,7 +9,7 @@
 import UIKit
 
 protocol ActionPickerViewControllerDelegate: class {
-    func actionPickerViewControllerDelegateDidSelect(action: ActionStatus)
+    func actionPickerViewControllerDelegateDidSelect(action: ActionType)
 }
 
 class ActionPickerViewController: UIViewController {
@@ -19,7 +19,7 @@ class ActionPickerViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     
-    fileprivate let allStatuses = ActionStatus.allValues
+    fileprivate let allStatuses = ActionType.allValues
     private let singleCellHeight: CGFloat = 48.0
     weak var delegate: ActionPickerViewControllerDelegate?
     
@@ -70,7 +70,8 @@ extension ActionPickerViewController: UITableViewDataSource {
 
 extension ActionPickerViewController: UITableViewDelegate {
     
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(allStatuses[indexPath.row])
         delegate?.actionPickerViewControllerDelegateDidSelect(action: allStatuses[indexPath.row])
         dismiss(animated: true, completion: nil)
     }

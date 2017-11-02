@@ -15,9 +15,14 @@ class ActionViewController: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var statusContainerView: UIView!
     
-    var status: ActionType = .idle {
+    var status: ActionType = .stop {
         didSet {
-            handleActionChanges()
+            switch status {
+            case .changeSpeed:
+                return
+            default:
+                handleActionChanges()
+            }
         }
     }
     
@@ -25,18 +30,21 @@ class ActionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        status = .idle
+        status = .stop
     }
     
     //MARK: Actions
 
     @IBAction func run(_ sender: Any) {
         switch status {
-        case .idle:
+        case .idle, .stop:
             presentModeChooser()
-        default:
-            status = .idle
+        case .freeRemoteRide:
             perform(action: .idle)
+        case .autonomusMode:
+            perform(action: .stop)
+        default:
+            return
         }
     }
     
@@ -54,12 +62,11 @@ class ActionViewController: UIViewController {
     
     private func handleActionChanges() {
         switch status {
-        case .idle:
+        case .stop:
             updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "play-button"))])
         default:
             updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "stop-button"))])
         }
-
         statusLabel.text = status.statusTitle
     }
     
@@ -90,14 +97,22 @@ class ActionViewController: UIViewController {
     }
     
     fileprivate func perform(action: ActionType) {
-        
+        CarActionsAPIHelper().request(action: action) { (success, error) in
+            guard let errorMsg = error, !success else {
+                self.status = action
+                return
+            }
+            
+            let alert = UIAlertController(title: "Error", message: errorMsg, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }
 
 extension ActionViewController: ActionPickerViewControllerDelegate {
     
     func actionPickerViewControllerDelegateDidSelect(action: ActionType) {
-        status = action
         perform(action: action)
     }
 }

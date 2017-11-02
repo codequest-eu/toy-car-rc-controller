@@ -10,6 +10,8 @@
 		087FD4017DB281DDDE3D237A /* Pods_CarController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A1271153E6A6170323FA804 /* Pods_CarController.framework */; };
 		5A8380CD1FAB50B20065E078 /* APICarActionsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8380CC1FAB50B20065E078 /* APICarActionsRouter.swift */; };
 		5A8380CF1FAB53E80065E078 /* APIRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8380CE1FAB53E80065E078 /* APIRequestBuilder.swift */; };
+		5A8380D11FAB5E370065E078 /* CarActionsAPIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8380D01FAB5E370065E078 /* CarActionsAPIHelper.swift */; };
+		5A8380D31FAB5E9D0065E078 /* APIRequestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8380D21FAB5E9D0065E078 /* APIRequestable.swift */; };
 		EE344F161F655ABD00E4598D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE344F151F655ABD00E4598D /* AppDelegate.swift */; };
 		EE344F181F655ABD00E4598D /* RootTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE344F171F655ABD00E4598D /* RootTabBarController.swift */; };
 		EE344F1B1F655ABD00E4598D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EE344F191F655ABD00E4598D /* Main.storyboard */; };
@@ -19,7 +21,7 @@
 		EE344F2C1F65D00800E4598D /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE344F2B1F65D00800E4598D /* ActionViewController.swift */; };
 		EE344F2E1F65D01E00E4598D /* RecordingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE344F2D1F65D01E00E4598D /* RecordingListViewController.swift */; };
 		EE894E381F8EABD900303099 /* ActionPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE894E371F8EABD900303099 /* ActionPickerViewController.swift */; };
-		EEB9D6071F82807400396348 /* ActionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB9D6061F82807400396348 /* ActionStatus.swift */; };
+		EEB9D6071F82807400396348 /* ActionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB9D6061F82807400396348 /* ActionType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +29,8 @@
 		1A1271153E6A6170323FA804 /* Pods_CarController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CarController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A8380CC1FAB50B20065E078 /* APICarActionsRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = APICarActionsRouter.swift; path = APIHelpers/APICarActionsRouter.swift; sourceTree = "<group>"; };
 		5A8380CE1FAB53E80065E078 /* APIRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = APIRequestBuilder.swift; path = APIHelpers/APIRequestBuilder.swift; sourceTree = "<group>"; };
+		5A8380D01FAB5E370065E078 /* CarActionsAPIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarActionsAPIHelper.swift; sourceTree = "<group>"; };
+		5A8380D21FAB5E9D0065E078 /* APIRequestable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = APIRequestable.swift; path = APIHelpers/APIRequestable.swift; sourceTree = "<group>"; };
 		EE344F121F655ABD00E4598D /* CarController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE344F151F655ABD00E4598D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EE344F171F655ABD00E4598D /* RootTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabBarController.swift; sourceTree = "<group>"; };
@@ -38,7 +42,7 @@
 		EE344F2B1F65D00800E4598D /* ActionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActionViewController.swift; path = "View Controllers/ActionViewController.swift"; sourceTree = "<group>"; };
 		EE344F2D1F65D01E00E4598D /* RecordingListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RecordingListViewController.swift; path = "View Controllers/RecordingListViewController.swift"; sourceTree = "<group>"; };
 		EE894E371F8EABD900303099 /* ActionPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ActionPickerViewController.swift; path = "View Controllers/ActionPickerViewController.swift"; sourceTree = "<group>"; };
-		EEB9D6061F82807400396348 /* ActionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionStatus.swift; sourceTree = "<group>"; };
+		EEB9D6061F82807400396348 /* ActionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionType.swift; sourceTree = "<group>"; };
 		F51A8445CA3924593891DE03 /* Pods-CarController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CarController.release.xcconfig"; path = "Pods/Target Support Files/Pods-CarController/Pods-CarController.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -83,7 +87,7 @@
 		5A8380CB1FAB4FD80065E078 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				EEB9D6061F82807400396348 /* ActionStatus.swift */,
+				EEB9D6061F82807400396348 /* ActionType.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -126,6 +130,8 @@
 			children = (
 				5A8380CC1FAB50B20065E078 /* APICarActionsRouter.swift */,
 				5A8380CE1FAB53E80065E078 /* APIRequestBuilder.swift */,
+				5A8380D01FAB5E370065E078 /* CarActionsAPIHelper.swift */,
+				5A8380D21FAB5E9D0065E078 /* APIRequestable.swift */,
 			);
 			name = APIHelpers;
 			sourceTree = "<group>";
@@ -275,10 +281,12 @@
 				EE344F2E1F65D01E00E4598D /* RecordingListViewController.swift in Sources */,
 				EE894E381F8EABD900303099 /* ActionPickerViewController.swift in Sources */,
 				EE344F181F655ABD00E4598D /* RootTabBarController.swift in Sources */,
-				EEB9D6071F82807400396348 /* ActionStatus.swift in Sources */,
+				5A8380D11FAB5E370065E078 /* CarActionsAPIHelper.swift in Sources */,
+				EEB9D6071F82807400396348 /* ActionType.swift in Sources */,
 				5A8380CF1FAB53E80065E078 /* APIRequestBuilder.swift in Sources */,
 				5A8380CD1FAB50B20065E078 /* APICarActionsRouter.swift in Sources */,
 				EE344F161F655ABD00E4598D /* AppDelegate.swift in Sources */,
+				5A8380D31FAB5E9D0065E078 /* APIRequestable.swift in Sources */,
 				EE344F2C1F65D00800E4598D /* ActionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

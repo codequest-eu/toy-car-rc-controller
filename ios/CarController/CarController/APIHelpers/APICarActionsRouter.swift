@@ -20,11 +20,15 @@ struct APICarActionsRouter: URLRequestConvertible, APIUrlPath {
     var path: String {
         switch action {
         case .idle: return "/idle"
-        case .freeRide: return ""
-        case .collectingDataFromCamera: return ""
-        case .recordingTrackWithoutCamera: return ""
-        case .autonomusMode: return ""
-        case .playingSavedTrack: return ""
+        case .stop: return "/stop"
+        case .freeRemoteRide: return "/remote" //zmienić nazwę
+//        case .collectingDataFromCamera: return "/learning"
+//        case .recordingTrackWithoutCamera: return ""
+        case .autonomusMode: return "/drive"
+//        case .playingSavedTrack: return "" //replay - nie potrzebujemy w pierwszym rzucie
+        case .changeSpeed(let speed): return "/speed?value=\(speed)"
+
+            //start - start recording i stop nagrywa dla replpaya
         }
     }
     
