@@ -114,7 +114,7 @@ class CarServer(object):
         if self.started:
             self.cleanup()
             return "INFO: Session ended successfully"
-         else:
+        else:
             self.stop_driving()
             return "INFO: Driving ended successfully"
 
