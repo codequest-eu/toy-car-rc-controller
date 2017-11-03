@@ -25,4 +25,3 @@ class NeuralNetworkPredictor:
         print('model loaded, loading weights')
         self.model.load_weights('out.h5')
         print('weights loaded')
-        print('d')
