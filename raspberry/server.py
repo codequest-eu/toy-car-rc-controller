@@ -111,15 +111,12 @@ class CarServer(object):
     @cherrypy.expose
     def stop(self):
         self.idle()
-       # if not self.started and not self.driving_started:
-       #     cherrypy.response.status = 400
-       #     return "WARNING: Neither session nor driving started"
-       if self.started:
-           self.cleanup()
-           return "INFO: Session ended successfully"
-       else:
-           self.stop_driving()
-           return "INFO: Driving ended successfully"
+        if self.started:
+            self.cleanup()
+            return "INFO: Session ended successfully"
+         else:
+            self.stop_driving()
+            return "INFO: Driving ended successfully"
 
     def stop_driving(self):
         self.driving_started = False
