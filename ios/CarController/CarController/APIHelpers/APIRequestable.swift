@@ -29,7 +29,12 @@ public protocol APIRequestable {
 
 public extension APIRequestable {
     func request(_ url: URLRequestConvertible, completionHandler: @escaping ResponseHander) {
-        Alamofire.request(url)
+        guard var urlRequest = url.urlRequest else {
+            completionHandler(.failure("Wrong request"))
+            return
+        }
+        urlRequest.timeoutInterval = 8
+        Alamofire.request(urlRequest)
             .responseJSON { (response) in
                 guard let statusCode = response.response?.statusCode,
                 statusCode == 200 else {

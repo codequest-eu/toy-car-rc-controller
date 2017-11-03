@@ -75,22 +75,9 @@ class ActionViewController: UIViewController {
     }
 
     //MARK: Private functions
-    
     private func handleActionChanges() {
-//        switch status {
-//        case .stop, .idle:
-//            updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "play-button"))])
-//        default:
-//            updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "stop-button"))])
-//        }
         statusLabel.text = status.statusTitle
     }
-    /*
-    private func updateButtonsImage(for buttonsArray: [(button: UIButton, image: UIImage)]) {
-        buttonsArray.forEach {
-            $0.button.setImage($0.image, for: .normal)
-        }
-    }*/
     
     private func drawBorder(_ view: UIView) {
         view.layer.borderColor = UIColor.black.cgColor
@@ -154,5 +141,10 @@ extension ActionViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         APIURLSets.IP = textField.text ?? APIURLSets.defaultIP
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
