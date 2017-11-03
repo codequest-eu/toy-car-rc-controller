@@ -182,7 +182,7 @@
 				TargetAttributes = {
 					EE344F111F655ABD00E4598D = {
 						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = U79R64Q332;
+						DevelopmentTeam = W5SLRW4B3C;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -415,7 +415,7 @@
 			baseConfigurationReference = 0A1514367E132A5C55A1D05D /* Pods-CarController.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = U79R64Q332;
+				DEVELOPMENT_TEAM = W5SLRW4B3C;
 				INFOPLIST_FILE = CarController/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -430,7 +430,7 @@
 			baseConfigurationReference = F51A8445CA3924593891DE03 /* Pods-CarController.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = U79R64Q332;
+				DEVELOPMENT_TEAM = W5SLRW4B3C;
 				INFOPLIST_FILE = CarController/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
