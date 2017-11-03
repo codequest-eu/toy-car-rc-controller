@@ -17,6 +17,7 @@
 #define COMMAND_PILOT_INPUT 'R' // remote
 #define COMMAND_SERIAL_INPUT 'A' // autonomus
 #define COMMAND_SERIAL_STEER 'T' // turn value
+#define COMMAND_SERIAL_SPEED 'S' // new speed value
 
 int t_last_log = 0;
 int t_log_freq = 50;
@@ -30,10 +31,12 @@ enum Command {
   commandNoInput,
   commandPilotInput,
   commandSerialInput,
-  commandSerialSteerValue
+  commandSerialSteerValue,
+  commandSerialSpeedValue
 };
 
 int steerCommandValue = 0;
+int speedCommandValue = 0;
 
 enum InputMode {
   inputModeNone,
@@ -117,6 +120,8 @@ void handleCommands() {
       setInputMode(command);
     } else if (command == commandSerialSteerValue) {
       steerCommand(steerCommandValue);
+    } else if (command == commandSerialSpeedValue) {
+      speedCommand(speedCommandValue);
     }
   }
 
@@ -157,6 +162,16 @@ Command readSerialCommand() {
       inputStart += 3;
       return commandSerialSteerValue;
     }
+  } else if (c == COMMAND_SERIAL_SPEED) {
+    if (bytesInBuffer < 3) {
+      return commandEmpty;
+    } else {
+      uint16_t value = (uint16_t(serialInput[inputStart + 1]) << 8) |
+                       serialInput[inputStart + 2];
+      speedCommandValue = value; // TODO: add incorrect value flow
+      inputStart += 3;
+      return commandSerialSpeedValue;
+    } 
   } else {
     inputStart += 1; // TODO: add log incorrect case?
     return commandIncorrect;
@@ -182,6 +197,12 @@ void steerCommand(int value) {
   if (inputMode != inputModeSerial) return;
   
   currentSteering = value;
+}
+
+void speedCommand(int value) {
+  if (inputMode == inputModeNone) return;
+
+  currentThrottle = value;
 }
 
 void applyCurrentValues() {
