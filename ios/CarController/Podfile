@@ -5,4 +5,5 @@ target 'CarController' do
 
     pod 'Alamofire', '~> 4.0'
     pod 'SVProgressHUD'
+    pod 'IQKeyboardManager'
 end

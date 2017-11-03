@@ -12,6 +12,7 @@ import SVProgressHUD
 class ActionViewController: UIViewController {
     
     @IBOutlet weak var runButton: UIButton!
+    @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var actionContainerView: UIView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var statusContainerView: UIView!
@@ -47,16 +48,11 @@ class ActionViewController: UIViewController {
     //MARK: Actions
 
     @IBAction func run(_ sender: Any) {
-        switch status {
-        case .idle, .stop:
-            presentModeChooser()
-        case .freeRemoteRide:
-            perform(action: .idle)
-        case .autonomusMode:
-            perform(action: .stop)
-        default:
-            return
-        }
+        presentModeChooser()
+    }
+    
+    @IBAction func stop(_ sender: Any) {
+         perform(action: .stop)
     }
     
     @IBAction func increaseVelocity(_ sender: Any) {
@@ -79,20 +75,20 @@ class ActionViewController: UIViewController {
     //MARK: Private functions
     
     private func handleActionChanges() {
-        switch status {
-        case .stop, .idle:
-            updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "play-button"))])
-        default:
-            updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "stop-button"))])
-        }
+//        switch status {
+//        case .stop, .idle:
+//            updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "play-button"))])
+//        default:
+//            updateButtonsImage(for: [(runButton, #imageLiteral(resourceName: "stop-button"))])
+//        }
         statusLabel.text = status.statusTitle
     }
-    
+    /*
     private func updateButtonsImage(for buttonsArray: [(button: UIButton, image: UIImage)]) {
         buttonsArray.forEach {
             $0.button.setImage($0.image, for: .normal)
         }
-    }
+    }*/
     
     private func drawBorder(_ view: UIView) {
         view.layer.borderColor = UIColor.black.cgColor
