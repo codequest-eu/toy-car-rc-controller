@@ -19,10 +19,15 @@ public protocol APIRequestBuilder {
     func carAPIRequest() -> URLRequest
 }
 
+public class APIURLSets {
+    static let defaultIP = "192.168.1.28"
+    static var IP = APIURLSets.defaultIP
+}
+
 public extension APIRequestBuilder where Self: APIUrlPath {
     
     var baseURL: String {
-        return "http://192.168.1.28:8080"
+        return "http://\(APIURLSets.IP):8080"
     }
     
     func carAPIRequest() -> URLRequest {

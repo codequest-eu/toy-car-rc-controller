@@ -44,6 +44,7 @@ class ActionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         status = .stop
+        ipTextField.text = APIURLSets.IP
     }
     
     //MARK: Actions
@@ -146,5 +147,12 @@ extension ActionViewController: ActionPickerViewControllerDelegate {
     
     func actionPickerViewControllerDelegateDidSelect(action: ActionType) {
         perform(action: action)
+    }
+}
+
+extension ActionViewController: UITextFieldDelegate {
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        APIURLSets.IP = textField.text ?? APIURLSets.defaultIP
     }
 }
