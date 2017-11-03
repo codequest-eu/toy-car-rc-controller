@@ -209,8 +209,8 @@ void applyCurrentValues() {
   // Read the pulse width of 973 - 1954 for steering
   steeringOut.writeMicroseconds(currentSteering);
   if (abs(lastAppliedSteer - currentSteering) > 10) {
-    logDebug("new steer applied:");
-    logDebug(String(currentSteering));
+//    logDebug("new steer applied:");
+//    logDebug(String(currentSteering));
     lastAppliedSteer = currentSteering;
   }
 
