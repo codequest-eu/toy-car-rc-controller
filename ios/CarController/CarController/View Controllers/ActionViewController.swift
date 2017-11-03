@@ -19,6 +19,7 @@ class ActionViewController: UIViewController {
     @IBOutlet weak var velocityLabel: UILabel!
     @IBOutlet weak var plusVelocityButton: UIButton!
     @IBOutlet weak var minusVelocityButton: UIButton!
+    @IBOutlet weak var ipTextField: UITextField!
     
     var currentVelocity = 1536 {
         didSet {
