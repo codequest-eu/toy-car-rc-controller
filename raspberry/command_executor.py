@@ -17,7 +17,7 @@ class CommandExecutor:
         self.ser.flush()
 
     def make_turn(self, value):
-        print("Turn %d" % value)
+        # print("Turn %d" % value)
         self.send_int_command(b'T', value)
 
     def set_speed(self, value):
