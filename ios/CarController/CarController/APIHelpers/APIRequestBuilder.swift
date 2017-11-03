@@ -22,13 +22,14 @@ public protocol APIRequestBuilder {
 public extension APIRequestBuilder where Self: APIUrlPath {
     
     var baseURL: String {
-        return "http://192.168.1.49:8080"
+        return "http://192.168.1.28:8080"
     }
     
     func carAPIRequest() -> URLRequest {
-        let url = URL(string: baseURL)!
-        var request = URLRequest(url: url.appendingPathComponent(path))
+        let url = URL(string: baseURL + path)!
+        var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
+        print(request)
         return request
     }
 }

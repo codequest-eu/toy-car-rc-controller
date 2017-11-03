@@ -24,7 +24,7 @@ class ActionViewController: UIViewController {
             velocityLabel.text = "Velocity \(currentVelocity)"
         }
     }
-    let defaultVelocityChangeValue = 5
+    let defaultVelocityChangeValue = 1
     
     var status: ActionType = .stop {
         didSet {
